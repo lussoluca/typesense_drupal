@@ -1,0 +1,7 @@
+typesense.search:
+  path: '/search'
+  defaults:
+    _title: 'Search'
+    _controller: '\Drupal\typesense\Controller\SearchController'
+  requirements:
+    _permission: 'access content'

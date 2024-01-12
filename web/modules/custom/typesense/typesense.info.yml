@@ -1,0 +1,5 @@
+name: 'Typesense'
+type: module
+description: 'xxx'
+package: Custom
+core_version_requirement: ^10

@@ -1,0 +1,291 @@
+<mediawiki xmlns="http://www.mediawiki.org/xml/export-0.10/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mediawiki.org/xml/export-0.10/ http://www.mediawiki.org/xml/export-0.10.xsd" version="0.10" xml:lang="it">
+  <siteinfo>
+    <sitename>Wikipedia</sitename>
+    <dbname>itwiki</dbname>
+    <base>https://it.wikipedia.org/wiki/Pagina_principale</base>
+    <generator>MediaWiki 1.42.0-wmf.10</generator>
+    <case>first-letter</case>
+    <namespaces>
+      <namespace key="-2" case="first-letter">Media</namespace>
+      <namespace key="-1" case="first-letter">Speciale</namespace>
+      <namespace key="0" case="first-letter" />
+      <namespace key="1" case="first-letter">Discussione</namespace>
+      <namespace key="2" case="first-letter">Utente</namespace>
+      <namespace key="3" case="first-letter">Discussioni utente</namespace>
+      <namespace key="4" case="first-letter">Wikipedia</namespace>
+      <namespace key="5" case="first-letter">Discussioni Wikipedia</namespace>
+      <namespace key="6" case="first-letter">File</namespace>
+      <namespace key="7" case="first-letter">Discussioni file</namespace>
+      <namespace key="8" case="first-letter">MediaWiki</namespace>
+      <namespace key="9" case="first-letter">Discussioni MediaWiki</namespace>
+      <namespace key="10" case="first-letter">Template</namespace>
+      <namespace key="11" case="first-letter">Discussioni template</namespace>
+      <namespace key="12" case="first-letter">Aiuto</namespace>
+      <namespace key="13" case="first-letter">Discussioni aiuto</namespace>
+      <namespace key="14" case="first-letter">Categoria</namespace>
+      <namespace key="15" case="first-letter">Discussioni categoria</namespace>
+      <namespace key="100" case="first-letter">Portale</namespace>
+      <namespace key="101" case="first-letter">Discussioni portale</namespace>
+      <namespace key="102" case="first-letter">Progetto</namespace>
+      <namespace key="103" case="first-letter">Discussioni progetto</namespace>
+      <namespace key="118" case="first-letter">Bozza</namespace>
+      <namespace key="119" case="first-letter">Discussioni bozza</namespace>
+      <namespace key="710" case="first-letter">TimedText</namespace>
+      <namespace key="711" case="first-letter">TimedText talk</namespace>
+      <namespace key="828" case="first-letter">Modulo</namespace>
+      <namespace key="829" case="first-letter">Discussioni modulo</namespace>
+      <namespace key="2300" case="case-sensitive">Accessorio</namespace>
+      <namespace key="2301" case="case-sensitive">Discussioni accessorio</namespace>
+      <namespace key="2302" case="case-sensitive">Definizione accessorio</namespace>
+      <namespace key="2303" case="case-sensitive">Discussioni definizione accessorio</namespace>
+    </namespaces>
+  </siteinfo>
+  <page>
+    <title>Armonium</title>
+    <ns>0</ns>
+    <id>2</id>
+    <revision>
+      <id>137132994</id>
+      <parentid>135273260</parentid>
+      <timestamp>2024-01-01T06:36:56Z</timestamp>
+      <contributor>
+        <ip>37.119.226.217</ip>
+      </contributor>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text bytes="17812" xml:space="preserve">{{Nd|la band italiana|Armonium (gruppo musicale)}}&lt;!--
+## ATTENZIONE ##
+* Questa nota disambigua è usata come esempio in [[Aiuto:Disambigua#Tipi di disambiguazione]] (§B.B1).
+* Se fai delle modifiche, verifica che l'esempio resti valido oppure sostituiscilo con un altro.
+--&gt;
+{{Nd|un articolo poco più generico|Organo (strumento musicale)#Organi senza canne}}
+{{NN|strumenti musicali|gennaio 2016}}
+{{Strumento musicale
+|Immagine = Harmonium Alexandre.JPG
+|Didascalia = [[#Armonium occidentale|Armonium occidentale]], di tipo [[Francia|francese]]
+|Data di invenzione = [[XIX secolo]]
+|Origine geografica = [[Europa occidentale]]
+|Estensione = &lt;!-- link dell'immagine (es: Trombone range.svg) --&gt;
+|Didascalia estensione = &lt;!-- eventuale commento sull'estensione --&gt;
+|Progenitore = [[Organo a canne]]
+|Discendente = [[Organo Hammond]]
+|Ascolto = César Franck-Harmonium-5e pièce en do.ogg
+|Didascalia ascolto = [[César Franck]]: 5ª parte tratta da ''L'organiste'', suonata su un armonium Debain del [[1878]]
+|Codice classificazione = org
+|Utilizzo 1 = Romantica
+|Utilizzo 2 = Contemporanea
+|Utilizzo 3 = Asia del Sud
+}}
+L{{'}}'''armonium''', o '''harmonium''', è un tipo di [[Organo (strumento musicale)|organo]] [[:Categoria:Aerofoni a serbatoio d'aria|a serbatoio d'aria]] con una (o più) [[Tastiera (musica)|tastiere]] e due [[Pedale (meccanica)|pedali]] per azionare i [[Mantice|mantici]] per l'[[aria]]. Il suono è prodotto da una o più file di [[ance libere]], analogamente alla [[fisarmonica]] e all'[[armonica a bocca]].
+
+Nella [[classificazione Hornbostel-Sachs]], rientra nella famiglia denominata &quot;[[Aerofoni#Aerofoni liberi|serie di aerofoni ad ancia libera]]&quot; (codice 412.132). Prima dell'invenzione dell'armonium esisteva un diverso organo privo di canne, il [[regale (strumento musicale)|regale]], in cui il suono era prodotto da [[ance battenti]] e che cadde progressivamente in disuso dopo il XVII secolo, molto prima dell'invenzione dell'armonium. Oltre alla notevole differenza timbrica, una caratteristica dell'armonium (come degli altri strumenti ad ancia libera) è la grande stabilità dell'accordatura, al contrario del regale che deve essere riaccordato molto frequentemente.
+
+Poiché la frequenza di vibrazione delle ance libere non dipende dalla pressione dell'aria (contrariamente a quanto avviene nelle ance battenti e nelle [[Canna (organo)|canne labiali]]), lo strumento consente di variare l'intensità del suono a fini espressivi, cosa impossibile negli organi a canne. A questo scopo, in molti strumenti (particolarmente in quelli di costruzione francese) è presente un meccanismo che blocca il mantice interno, che altrimenti mantiene costante la pressione, in modo che quest'ultima sia determinata direttamente dalla velocità con cui l'esecutore spinge alternativamente i pedali.
+
+== Armonium occidentale ==
+
+Nel termine italiano ''armonium'' si comprendono due differenti tipi di strumento: quello ad aria compressa, che è l{{'}}''harmonium'' di tipo [[Francia|francese]], e quello ad aria aspirata, che è il ''reed organ'' [[Stati Uniti d'America|statunitense]] (ma anche [[Regno Unito|britannico]] e [[Germania|tedesco]]). Nel primo caso, i [[Mantice|mantici]] pompano l’[[aria]], attraverso una “camera del vento” o “serbatoio” (''réservoir'', in [[Lingua francese|francese]]), verso le [[Ancia|ance]] facendole vibrare; nel secondo caso, essi aspirano l’aria atmosferica, che passando attraverso le ance le mette in vibrazione.
+
+L'uso di registri ad ancia libera fu sperimentato già nel corso del XVIII secolo da alcuni organari tedeschi e svedesi, e suscitò particolare interesse l'inserimento di registri di questo tipo nell'[[automa musicale]] detto ''Panharmonicon'', che rese celebre il suo costruttore [[Johann Nepomuk Mälzel|J.N. Maelzel]] a seguito di numerose esibizioni in varie capitali europee e successivamente a [[New York]].
+
+Il ''reed organ'' nasce negli Stati Uniti nella prima metà dell'[[XIX secolo|Ottocento]] (come afferma Gellerman&lt;ref&gt;{{Cita libro|titolo=Robert F. Gellerman, The American Reed Organ and the Harmonium, New York 1996|isbn=9781879511125}}&lt;/ref&gt;), risultato finale di tutta una serie di strumenti sperimentali (come il &quot;Pan Harmonicon&quot; di Goodrich, di [[Boston]], o la &quot;Seraphine&quot; di Green, di [[Londra]]), probabilmente ad opera di un tale Aaron Merrill Peaseley, anche lui di Boston. Lo stesso Gellerman tuttavia riconosce che mancano documenti probanti questa attribuzione, mentre il primo produttore certo di ''American reed organs'' fu [[James A. Bazin|James Amireaux Bazin]], inventore di Canton, Massachusetts, che ne costruì un primo esemplare nel [[1824]]. Tali strumenti non ebbero immediata diffusione tanto che nel [[1846]] in tutti gli Stati Uniti se ne contavano meno di trecento; venivano prodotti a mano in piccoli negozi, da artigiani che ne costruivano perciò tipi assai differenti per foggia e materiali, spesso a seconda della richiesta. Per una produzione di tipo industriale su più larga scala bisogna attendere la metà del secolo, con l'affermarsi delle prime compagnie e dei primi marchi di fabbrica: la George A. Prince Company (che divenne un'azienda leader in America tra gli [[Anni 1850|anni '50]] e [[Anni 1860|'60]] dell'Ottocento) di [[Buffalo]] ([[New York]]); la Jones, Woodbury &amp; Burditt di [[Brattleboro]] ([[Vermont]]); la Carhart &amp; Needham di New York. L'epoca d'oro del ''reed organ'' americano, tuttavia, ha inizio con la seconda metà dell'Ottocento, ad opera di grandi produttori come Jacob Estey di Brattleboro (fondatore della Estey Organ Company, attiva per più di un secolo, dal [[1852]] fino al [[1959]]) o William Wallace Kimball di [[Chicago]] (W.W.Kimball &amp; Co.). Ad essi si affiancano altri nomi di aziende produttrici di ''reed organ'', come Mason &amp; Hamlin, Farrand, la Aeolian Company: gli strumenti prodotti andavano da quelli più sofisticati (come il &quot;Vocalion&quot; o l'&quot;Orchestrelle&quot;), spesso caratterizzati da forme assai elaborate, a strumenti portatili pieghevoli (''folding organ''), che vennero assai impiegati dai missionari o dai cappellani dell'esercito americano durante le missioni belliche della [[Seconda guerra mondiale|Seconda Guerra Mondiale]].
+
+L{{'}}''harmonium'' francese ha il suo antecedente in uno strumento inventato nel 1810 da Gabriel-Joseph Grenié (1757–1837), con il nome ''orgue expressif'', che però ebbe scarsa diffusione. Nel 1830 l'organaro [[Aristide Cavaillé-Coll]] produsse un modello più evoluto, con il nome ''poïkilorgue'', che attrasse tra gli altri l'attenzione di [[Gioachino Rossini]]. Il nome ''harmonium'' fu dato al modello creato nel [[1840]] ad opera di [[Alexandre-François Debain]], che godette di un successo molto più ampio dei suoi predecessori. Nonostante i tentativi di Debain di tutelare l'uso esclusivo del nome, altri costruttori se ne appropriarono e in tutta Europa questo finì per diventare il nome generico dello strumento. Se ne produssero esemplari particolarmente elaborati, dal punto di vista tecnico ma anche estetico, per i quali si parla di ''harmonium d'art''. Tra questi, i più notevoli si devono a [[Victor Mustel]], che ne affinò notevolmente la tecnica costruttiva e ampliò la ricchezza timbrica: i suoi strumenti presentano una bellezza estetica indiscutibile (data anche dall’utilizzo di legni pregiati, come il [[Quercus petraea|rovere]] francese o il [[palissandro]]). L'eleganza delle forme e dei particolari costruttivi ne fecero riferimenti imprescindibili, ma sono soprattutto la perfezione tecnica, il fascino timbrico e la novità delle invenzioni che egli introdusse (come il ''Prolongement'', col quale si possono prolungare alcune note del basso, il ''Métaphone'', che modifica il timbro di alcuni registri, o la ''Double Expression'', capace di dare differenti sfumature dinamiche alla parte bassa e alta della tastiera) che rendono unici tali strumenti.
+
+Altri celebri produttori francesi di ''harmonium'' furono J. Alexandre, Dumont-Lelièvre, Christophe et Étienne, Kasriel, Rodolphe, Richard. I costruttori Julius and Paul Schiedmayer, formatisi negli ''ateliers'' di Debain e di Alexandre, fondarono nel 1853 a [[Stoccarda]] la prima ditta tedesca specializzata nella costruzione di questo strumento.
+
+Lungi dall’essere etichettato come un “parente povero” dell'[[Organo (strumento musicale)|organo]], l'armonium di tipo francese si ricavò così un posto stabile, oltre che nelle [[Chiesa (architettura)|chiese]], anche nei [[Sala (architettura)|salotti]], accanto al [[pianoforte]]. Proprio per questa ragione, per questo strumento vennero scritti anche brani non esclusivamente pertinenti all’ambito sacro, che costituiscono un repertorio importante per qualità e ricchezza musicale. Compositori che scrissero specificamente per ''harmonium'' furono [[Camille Saint-Saëns|Saint-Saëns]], [[Alexandre Guilmant|Guilmant]], [[Louis James Alfred Lefébure-Wély]] e, in Germania, [[Sigfrid Karg-Elert]].
+
+L{{'}}''harmonium'' francese venne ripreso in [[Italia]] da [[Graziano Tubi]] che nel [[1860]] fondò una casa di produzione di strumenti molto curati per fattura e qualità timbrica: Tubi, multiforme personalità di imprenditore, si servì di ance provenienti da [[Parigi]] (le celebri ance Estève) e si basò sui modelli francesi per la produzione dei propri strumenti. L’azienda, con sede a [[Lecco]], ebbe vita fino agli [[Anni 1970|anni settanta]] del [[XX secolo|'900]], prima di chiudere definitivamente la propria attività.
+
+Altri produttori italiani di armonium (che presero a modello sia strumenti di tipo francese sia di tipo americano) sono Giuseppe Mola ([[1837]]-[[1928]], di [[Torino]]: menzione di merito all’[[Esposizione Universale]] di [[Parigi]], [[1867]]), Egidio Galvan ([[1873]]-[[1944]], di [[Trento]]: medaglia di bronzo all’Esposizione Universale di [[Liegi]], [[1905]]), la [[FIP - Fabbrica Italiana Pianoforti]] di Torino, attiva dal [[1917]] al [[1929]], Iginio Delmarco e Arcangelo Bozzetta (attivi a [[Tesero]] dal [[1920]]), Giovanni Lanzani (attivo a [[Seveso]] dal [[1926]]), Achille Radice (attivo pure a [[Seveso]] dal 1929: noto anche col marchio AREF), Enrico Ciresa ([[1922]]-[[1991]], di Tesero, in attività dal [[1952]]), Arienti.
+
+I [[Registro (organo)|registri]] dell'armonium sono tutti ad ancia (ance libere) e il timbro è determinato dalla curvatura e dalla forma delle [[Ancia|ance]]; rispetto all'organo esso ha una minore varietà timbrica, ma attraverso il registro denominato “Espressione” permette un enorme controllo di sfumature dinamiche; i suoi effetti meccanici sono il [[tremolo (musica)|tremolo]], la [[Voce umana (registro d'organo)|voce umana]] e la [[sordina]]. Per regolare la dinamica si utilizzano anche le ''ginocchiere'' poste ai due lati delle ginocchia, che aprono e chiudono delle gelosie e che permettono così di graduare la quantità di suono prodotta dalle ance. In alcuni modelli, infine, una ginocchiera centrale permette di inserire contemporaneamente tutti i registri (“grande gioco” o “grand jeu”).
+
+Su molti strumenti è disponibile almeno un{{'}}''unione'', che funziona meccanicamente e serve a far suonare anche le note all'[[Ottava (musica)|ottava]] rispetto a quelle che si stanno suonando. Quando le unioni sono due, la prima serve per la metà inferiore della tastiera, la seconda per quella superiore, e permettono di far suonare le note raddoppiandole rispettivamente con l'ottava bassa e con l'ottava alta.
+
+A causa dell'alto costo della manutenzione specializzata necessaria e della relativa difficile reperibilità, nonché dell'avvento dell'organo liturgico elettronico, gli armonium sono progressivamente scomparsi dalle chiese o vi rimangono inutilizzati.
+
+== Armonium indiano ==
+{{Strumento musicale
+|Nome = Armonium indiano
+|Immagine = Dr Vidyadhar Oke.jpg
+|Didascalia = Musicista che suona l'armonium indiano
+|Origine geografica = [[Asia meridionale]]
+|Data di invenzione = [[XIX secolo]]
+|Codice classificazione = org
+|Utilizzo 1 = Folk
+|Utilizzo 2 = Contemporanea
+|Utilizzo 3 = Asia del Sud
+|Progenitore = [[Organo portativo]]
+}}
+
+È simile a quello [[#Armonium occidentale|occidentale]], ma di minori dimensioni, ed è stato portato in [[India]] dall'[[Ovest|Occidente]] dai missionari cristiani, da circa metà [[XIX secolo|Ottocento]] in poi. I musicisti avevano bisogno di uno strumento facilmente trasportabile da usare nelle funzioni [[Religione|religiose]], e lo trovarono in questo tipo di armonium, grande all'incirca come una [[fisarmonica]] e di funzionamento simile. La forma è quella di un mobiletto rettangolare, vicino al suonatore ha una [[Tastiera (musica)|tastiera]] (tipo [[pianoforte]]) che si estende da due a quattro [[Ottava (musica)|ottave]], e si suona con una sola mano, mentre l'altra mano aziona un [[mantice]] a soffietto posto sul lato distante dal suonatore, in modo simile all'antico [[organo portativo]]. La versione indiana ha poi la possibilità di mettere in funzione un certo numero di [[Bordone (musica)|bordoni]] diversi ([[Nota musicale|note]] costanti di sottofondo), onnipresenti nella [[musica classica indiana]] (viene azionato quello corrispondente alla [[Tonica (musica)|tonica]] del pezzo suonato).
+
+La storia dell'armonium in India è strettamente correlata a quella del [[sarangi]].
+
+La caratteristica più importante dell'armonium, rispetto al contesto indiano, è l'[[Intonazione (musica)|intonazione]]. Essendo uno strumento occidentale, è accordato secondo il [[temperamento equabile]], sviluppato in Occidente per le esigenze della musica armonico-tonale (quindi dell'[[armonia]] basata sugli [[Accordo (musica)|accordi]] e la [[Modulazione (musica)|modulazione]] da una [[Tonalità (musica)|tonalità]] all'altra). Questo tipo di [[accordatura]] è del tutto estraneo alla musica indiana, che è modale e non contempla accordi né cambiamenti nella tonica in una esecuzione musicale, ed è fondata su numerose e precise sfumature di intonazione dei suoni delle varie [[Scala musicale|scale]], che vengono usate (incompatibili con il nostro temperamento equabile).
+
+{{citazione necessaria|Ma altre caratteristiche hanno fatto in modo che si inserisse ugualmente nel contesto della [[musica indiana]] (anche di quella &quot;classica&quot;). La principale è che è appunto capace di passare immediatamente da una &quot;tonalità&quot; all'altra. La musica indiana è fondata su una tonica immutabile, ma è anche vero che ogni cantante ha la sua tonica personale, e questo rende l'armonium estremamente flessibile se usato per accompagnare cantanti diversi che usano toniche diverse. Inoltre la tecnica di questo strumento, applicata alla musica indiana, è relativamente semplice.
+
+Tradizionalmente l'accompagnamento dei/delle cantanti classici era affidato al sarangi, strumento ad arco molto importante in India, dalla voce estremamente caratteristica (grazie anche alle numerose corde di risonanza), ma che per una serie di motivi si trovò a perdere in preminenza. Tra questi, la difficoltà tecnica che richiede grande dedizione da parte del musicista, ed il fatto di avere così tante corde di risonanza (che non hanno un ruolo marginale, ma sono molto importanti per la sua sonorità e per la creazione del giusto &quot;sentimento&quot; musicale). Ogni pezzo musicale (raga), basato su una diversa scala, richiede che queste corde vengano riaccordate (cosa che richiede tempo e perizia); inoltre se un medesimo sarangista si trova a dover accompagnare diversi cantanti che usano toniche diverse, deve riaccordare completamente l'intero strumento (quando non sostituire addirittura le [[Corda (musica)|corde]]).
+
+In più, i mutamenti sociali favoriti dalla dominazione coloniale britannica hanno contribuito a spingere nell'ombra i suonatori di sarangi, che si sono visti soppiantare dai nuovi suonatori di armonium: capaci di passare rapidamente da una tonica all'altra, in grado di accompagnare diversi cantanti in rapida sequenza, più adatti al nuovo contesto rapido e &quot;tecnologico&quot; che si stava formando (ad esempio i concerti radiofonici di All India Radio). La gran parte dei cantanti si è adattata a farsi accompagnare nelle loro esecuzioni dall'armonium, nonostante l'irrimediabile fatto di essere fuori intonazione. Fatto musicalmente accettabile se mantenuto in un ruolo marginale, che non si scontrasse con la voce (intonata correttamente) del/della cantante.
+
+Si venne così a creare un circolo vizioso in cui i sarangisti veramente esperti divennero pochi, ed i cantanti cominciarono a preferire i suonatori di armonium (stonati, ma sempre più intonati di un cattivo sarangista).}}
+
+== Note ==
+&lt;references /&gt;
+
+== Bibliografia ==
+* Alphonse Mustel, ''L'Orgue-Expressif ou Harmonium'', Mustel Père &amp; Fils, Paris 1903
+* Robert F. Gellerman, ''The American Reed Organ and the Harmonium'', The Vestal Press, Ldt. Vestal, New York 1996
+* Roberto Perinu, ''La Musica Indiana'', ed. Zanibon, Padova, 1981
+* [[Ali Akbar Khan]], George Ruckert, ''The Classical Music of North India'', Munshiram Manoharlal Publishers, New Delhi, India, 1998
+* David Courtney, Chandrakantha Courtney, ''Elementary North Indian Vocal'', Sur Sangeet Services, Houston, USA, 1995
+* Sandeep Bagchee, ''Nad – Understanding Raga Music'', Eshwar, Mumbai, India, 1998
+* [[Stuart Isacoff]], ''Temperamento – Storia di un Enigma Musicale'', ed. EDT, Torino, 2005
+
+== Altri progetti ==
+{{Interprogetto|wikt=harmonium|preposizione=sull'}}
+
+== Collegamenti esterni ==
+* {{Collegamenti esterni}}
+* {{cita web|http://harmoniums.weebly.com|Approfondimenti}}
+
+{{Controllo di autorità}}
+{{Portale|musica|storia}}
+
+[[Categoria:Organo]]
+[[Categoria:Organo senza canne]]
+[[Categoria:Aerofoni a serbatoio d'aria]]
+[[Categoria:Aerofoni liberi]]
+[[Categoria:Predecessori dell'organo elettronico]]</text>
+      <sha1>pjhsiy5jzb8yuko9miksvorij9bvtfq</sha1>
+    </revision>
+  </page>
+  <page>
+    <title>Pippo</title>
+    <ns>0</ns>
+    <id>2</id>
+    <revision>
+      <id>137132994</id>
+      <parentid>135273260</parentid>
+      <timestamp>2024-01-01T06:36:56Z</timestamp>
+      <contributor>
+        <ip>37.119.226.217</ip>
+      </contributor>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text bytes="17812" xml:space="preserve">{{Nd|la band italiana|Armonium (gruppo musicale)}}&lt;!--
+## ATTENZIONE ##
+* Questa nota disambigua è usata come esempio in [[Aiuto:Disambigua#Tipi di disambiguazione]] (§B.B1).
+* Se fai delle modifiche, verifica che l'esempio resti valido oppure sostituiscilo con un altro.
+--&gt;
+{{Nd|un articolo poco più generico|Organo (strumento musicale)#Organi senza canne}}
+{{NN|strumenti musicali|gennaio 2016}}
+{{Strumento musicale
+|Immagine = Harmonium Alexandre.JPG
+|Didascalia = [[#Armonium occidentale|Armonium occidentale]], di tipo [[Francia|francese]]
+|Data di invenzione = [[XIX secolo]]
+|Origine geografica = [[Europa occidentale]]
+|Estensione = &lt;!-- link dell'immagine (es: Trombone range.svg) --&gt;
+|Didascalia estensione = &lt;!-- eventuale commento sull'estensione --&gt;
+|Progenitore = [[Organo a canne]]
+|Discendente = [[Organo Hammond]]
+|Ascolto = César Franck-Harmonium-5e pièce en do.ogg
+|Didascalia ascolto = [[César Franck]]: 5ª parte tratta da ''L'organiste'', suonata su un armonium Debain del [[1878]]
+|Codice classificazione = org
+|Utilizzo 1 = Romantica
+|Utilizzo 2 = Contemporanea
+|Utilizzo 3 = Asia del Sud
+}}
+L{{'}}'''armonium''', o '''harmonium''', è un tipo di [[Organo (strumento musicale)|organo]] [[:Categoria:Aerofoni a serbatoio d'aria|a serbatoio d'aria]] con una (o più) [[Tastiera (musica)|tastiere]] e due [[Pedale (meccanica)|pedali]] per azionare i [[Mantice|mantici]] per l'[[aria]]. Il suono è prodotto da una o più file di [[ance libere]], analogamente alla [[fisarmonica]] e all'[[armonica a bocca]].
+
+Nella [[classificazione Hornbostel-Sachs]], rientra nella famiglia denominata &quot;[[Aerofoni#Aerofoni liberi|serie di aerofoni ad ancia libera]]&quot; (codice 412.132). Prima dell'invenzione dell'armonium esisteva un diverso organo privo di canne, il [[regale (strumento musicale)|regale]], in cui il suono era prodotto da [[ance battenti]] e che cadde progressivamente in disuso dopo il XVII secolo, molto prima dell'invenzione dell'armonium. Oltre alla notevole differenza timbrica, una caratteristica dell'armonium (come degli altri strumenti ad ancia libera) è la grande stabilità dell'accordatura, al contrario del regale che deve essere riaccordato molto frequentemente.
+
+Poiché la frequenza di vibrazione delle ance libere non dipende dalla pressione dell'aria (contrariamente a quanto avviene nelle ance battenti e nelle [[Canna (organo)|canne labiali]]), lo strumento consente di variare l'intensità del suono a fini espressivi, cosa impossibile negli organi a canne. A questo scopo, in molti strumenti (particolarmente in quelli di costruzione francese) è presente un meccanismo che blocca il mantice interno, che altrimenti mantiene costante la pressione, in modo che quest'ultima sia determinata direttamente dalla velocità con cui l'esecutore spinge alternativamente i pedali.
+
+== Armonium occidentale ==
+
+Nel termine italiano ''armonium'' si comprendono due differenti tipi di strumento: quello ad aria compressa, che è l{{'}}''harmonium'' di tipo [[Francia|francese]], e quello ad aria aspirata, che è il ''reed organ'' [[Stati Uniti d'America|statunitense]] (ma anche [[Regno Unito|britannico]] e [[Germania|tedesco]]). Nel primo caso, i [[Mantice|mantici]] pompano l’[[aria]], attraverso una “camera del vento” o “serbatoio” (''réservoir'', in [[Lingua francese|francese]]), verso le [[Ancia|ance]] facendole vibrare; nel secondo caso, essi aspirano l’aria atmosferica, che passando attraverso le ance le mette in vibrazione.
+
+L'uso di registri ad ancia libera fu sperimentato già nel corso del XVIII secolo da alcuni organari tedeschi e svedesi, e suscitò particolare interesse l'inserimento di registri di questo tipo nell'[[automa musicale]] detto ''Panharmonicon'', che rese celebre il suo costruttore [[Johann Nepomuk Mälzel|J.N. Maelzel]] a seguito di numerose esibizioni in varie capitali europee e successivamente a [[New York]].
+
+Il ''reed organ'' nasce negli Stati Uniti nella prima metà dell'[[XIX secolo|Ottocento]] (come afferma Gellerman&lt;ref&gt;{{Cita libro|titolo=Robert F. Gellerman, The American Reed Organ and the Harmonium, New York 1996|isbn=9781879511125}}&lt;/ref&gt;), risultato finale di tutta una serie di strumenti sperimentali (come il &quot;Pan Harmonicon&quot; di Goodrich, di [[Boston]], o la &quot;Seraphine&quot; di Green, di [[Londra]]), probabilmente ad opera di un tale Aaron Merrill Peaseley, anche lui di Boston. Lo stesso Gellerman tuttavia riconosce che mancano documenti probanti questa attribuzione, mentre il primo produttore certo di ''American reed organs'' fu [[James A. Bazin|James Amireaux Bazin]], inventore di Canton, Massachusetts, che ne costruì un primo esemplare nel [[1824]]. Tali strumenti non ebbero immediata diffusione tanto che nel [[1846]] in tutti gli Stati Uniti se ne contavano meno di trecento; venivano prodotti a mano in piccoli negozi, da artigiani che ne costruivano perciò tipi assai differenti per foggia e materiali, spesso a seconda della richiesta. Per una produzione di tipo industriale su più larga scala bisogna attendere la metà del secolo, con l'affermarsi delle prime compagnie e dei primi marchi di fabbrica: la George A. Prince Company (che divenne un'azienda leader in America tra gli [[Anni 1850|anni '50]] e [[Anni 1860|'60]] dell'Ottocento) di [[Buffalo]] ([[New York]]); la Jones, Woodbury &amp; Burditt di [[Brattleboro]] ([[Vermont]]); la Carhart &amp; Needham di New York. L'epoca d'oro del ''reed organ'' americano, tuttavia, ha inizio con la seconda metà dell'Ottocento, ad opera di grandi produttori come Jacob Estey di Brattleboro (fondatore della Estey Organ Company, attiva per più di un secolo, dal [[1852]] fino al [[1959]]) o William Wallace Kimball di [[Chicago]] (W.W.Kimball &amp; Co.). Ad essi si affiancano altri nomi di aziende produttrici di ''reed organ'', come Mason &amp; Hamlin, Farrand, la Aeolian Company: gli strumenti prodotti andavano da quelli più sofisticati (come il &quot;Vocalion&quot; o l'&quot;Orchestrelle&quot;), spesso caratterizzati da forme assai elaborate, a strumenti portatili pieghevoli (''folding organ''), che vennero assai impiegati dai missionari o dai cappellani dell'esercito americano durante le missioni belliche della [[Seconda guerra mondiale|Seconda Guerra Mondiale]].
+
+L{{'}}''harmonium'' francese ha il suo antecedente in uno strumento inventato nel 1810 da Gabriel-Joseph Grenié (1757–1837), con il nome ''orgue expressif'', che però ebbe scarsa diffusione. Nel 1830 l'organaro [[Aristide Cavaillé-Coll]] produsse un modello più evoluto, con il nome ''poïkilorgue'', che attrasse tra gli altri l'attenzione di [[Gioachino Rossini]]. Il nome ''harmonium'' fu dato al modello creato nel [[1840]] ad opera di [[Alexandre-François Debain]], che godette di un successo molto più ampio dei suoi predecessori. Nonostante i tentativi di Debain di tutelare l'uso esclusivo del nome, altri costruttori se ne appropriarono e in tutta Europa questo finì per diventare il nome generico dello strumento. Se ne produssero esemplari particolarmente elaborati, dal punto di vista tecnico ma anche estetico, per i quali si parla di ''harmonium d'art''. Tra questi, i più notevoli si devono a [[Victor Mustel]], che ne affinò notevolmente la tecnica costruttiva e ampliò la ricchezza timbrica: i suoi strumenti presentano una bellezza estetica indiscutibile (data anche dall’utilizzo di legni pregiati, come il [[Quercus petraea|rovere]] francese o il [[palissandro]]). L'eleganza delle forme e dei particolari costruttivi ne fecero riferimenti imprescindibili, ma sono soprattutto la perfezione tecnica, il fascino timbrico e la novità delle invenzioni che egli introdusse (come il ''Prolongement'', col quale si possono prolungare alcune note del basso, il ''Métaphone'', che modifica il timbro di alcuni registri, o la ''Double Expression'', capace di dare differenti sfumature dinamiche alla parte bassa e alta della tastiera) che rendono unici tali strumenti.
+
+Altri celebri produttori francesi di ''harmonium'' furono J. Alexandre, Dumont-Lelièvre, Christophe et Étienne, Kasriel, Rodolphe, Richard. I costruttori Julius and Paul Schiedmayer, formatisi negli ''ateliers'' di Debain e di Alexandre, fondarono nel 1853 a [[Stoccarda]] la prima ditta tedesca specializzata nella costruzione di questo strumento.
+
+Lungi dall’essere etichettato come un “parente povero” dell'[[Organo (strumento musicale)|organo]], l'armonium di tipo francese si ricavò così un posto stabile, oltre che nelle [[Chiesa (architettura)|chiese]], anche nei [[Sala (architettura)|salotti]], accanto al [[pianoforte]]. Proprio per questa ragione, per questo strumento vennero scritti anche brani non esclusivamente pertinenti all’ambito sacro, che costituiscono un repertorio importante per qualità e ricchezza musicale. Compositori che scrissero specificamente per ''harmonium'' furono [[Camille Saint-Saëns|Saint-Saëns]], [[Alexandre Guilmant|Guilmant]], [[Louis James Alfred Lefébure-Wély]] e, in Germania, [[Sigfrid Karg-Elert]].
+
+L{{'}}''harmonium'' francese venne ripreso in [[Italia]] da [[Graziano Tubi]] che nel [[1860]] fondò una casa di produzione di strumenti molto curati per fattura e qualità timbrica: Tubi, multiforme personalità di imprenditore, si servì di ance provenienti da [[Parigi]] (le celebri ance Estève) e si basò sui modelli francesi per la produzione dei propri strumenti. L’azienda, con sede a [[Lecco]], ebbe vita fino agli [[Anni 1970|anni settanta]] del [[XX secolo|'900]], prima di chiudere definitivamente la propria attività.
+
+Altri produttori italiani di armonium (che presero a modello sia strumenti di tipo francese sia di tipo americano) sono Giuseppe Mola ([[1837]]-[[1928]], di [[Torino]]: menzione di merito all’[[Esposizione Universale]] di [[Parigi]], [[1867]]), Egidio Galvan ([[1873]]-[[1944]], di [[Trento]]: medaglia di bronzo all’Esposizione Universale di [[Liegi]], [[1905]]), la [[FIP - Fabbrica Italiana Pianoforti]] di Torino, attiva dal [[1917]] al [[1929]], Iginio Delmarco e Arcangelo Bozzetta (attivi a [[Tesero]] dal [[1920]]), Giovanni Lanzani (attivo a [[Seveso]] dal [[1926]]), Achille Radice (attivo pure a [[Seveso]] dal 1929: noto anche col marchio AREF), Enrico Ciresa ([[1922]]-[[1991]], di Tesero, in attività dal [[1952]]), Arienti.
+
+I [[Registro (organo)|registri]] dell'armonium sono tutti ad ancia (ance libere) e il timbro è determinato dalla curvatura e dalla forma delle [[Ancia|ance]]; rispetto all'organo esso ha una minore varietà timbrica, ma attraverso il registro denominato “Espressione” permette un enorme controllo di sfumature dinamiche; i suoi effetti meccanici sono il [[tremolo (musica)|tremolo]], la [[Voce umana (registro d'organo)|voce umana]] e la [[sordina]]. Per regolare la dinamica si utilizzano anche le ''ginocchiere'' poste ai due lati delle ginocchia, che aprono e chiudono delle gelosie e che permettono così di graduare la quantità di suono prodotta dalle ance. In alcuni modelli, infine, una ginocchiera centrale permette di inserire contemporaneamente tutti i registri (“grande gioco” o “grand jeu”).
+
+Su molti strumenti è disponibile almeno un{{'}}''unione'', che funziona meccanicamente e serve a far suonare anche le note all'[[Ottava (musica)|ottava]] rispetto a quelle che si stanno suonando. Quando le unioni sono due, la prima serve per la metà inferiore della tastiera, la seconda per quella superiore, e permettono di far suonare le note raddoppiandole rispettivamente con l'ottava bassa e con l'ottava alta.
+
+A causa dell'alto costo della manutenzione specializzata necessaria e della relativa difficile reperibilità, nonché dell'avvento dell'organo liturgico elettronico, gli armonium sono progressivamente scomparsi dalle chiese o vi rimangono inutilizzati.
+
+== Armonium indiano ==
+{{Strumento musicale
+|Nome = Armonium indiano
+|Immagine = Dr Vidyadhar Oke.jpg
+|Didascalia = Musicista che suona l'armonium indiano
+|Origine geografica = [[Asia meridionale]]
+|Data di invenzione = [[XIX secolo]]
+|Codice classificazione = org
+|Utilizzo 1 = Folk
+|Utilizzo 2 = Contemporanea
+|Utilizzo 3 = Asia del Sud
+|Progenitore = [[Organo portativo]]
+}}
+
+È simile a quello [[#Armonium occidentale|occidentale]], ma di minori dimensioni, ed è stato portato in [[India]] dall'[[Ovest|Occidente]] dai missionari cristiani, da circa metà [[XIX secolo|Ottocento]] in poi. I musicisti avevano bisogno di uno strumento facilmente trasportabile da usare nelle funzioni [[Religione|religiose]], e lo trovarono in questo tipo di armonium, grande all'incirca come una [[fisarmonica]] e di funzionamento simile. La forma è quella di un mobiletto rettangolare, vicino al suonatore ha una [[Tastiera (musica)|tastiera]] (tipo [[pianoforte]]) che si estende da due a quattro [[Ottava (musica)|ottave]], e si suona con una sola mano, mentre l'altra mano aziona un [[mantice]] a soffietto posto sul lato distante dal suonatore, in modo simile all'antico [[organo portativo]]. La versione indiana ha poi la possibilità di mettere in funzione un certo numero di [[Bordone (musica)|bordoni]] diversi ([[Nota musicale|note]] costanti di sottofondo), onnipresenti nella [[musica classica indiana]] (viene azionato quello corrispondente alla [[Tonica (musica)|tonica]] del pezzo suonato).
+
+La storia dell'armonium in India è strettamente correlata a quella del [[sarangi]].
+
+La caratteristica più importante dell'armonium, rispetto al contesto indiano, è l'[[Intonazione (musica)|intonazione]]. Essendo uno strumento occidentale, è accordato secondo il [[temperamento equabile]], sviluppato in Occidente per le esigenze della musica armonico-tonale (quindi dell'[[armonia]] basata sugli [[Accordo (musica)|accordi]] e la [[Modulazione (musica)|modulazione]] da una [[Tonalità (musica)|tonalità]] all'altra). Questo tipo di [[accordatura]] è del tutto estraneo alla musica indiana, che è modale e non contempla accordi né cambiamenti nella tonica in una esecuzione musicale, ed è fondata su numerose e precise sfumature di intonazione dei suoni delle varie [[Scala musicale|scale]], che vengono usate (incompatibili con il nostro temperamento equabile).
+
+{{citazione necessaria|Ma altre caratteristiche hanno fatto in modo che si inserisse ugualmente nel contesto della [[musica indiana]] (anche di quella &quot;classica&quot;). La principale è che è appunto capace di passare immediatamente da una &quot;tonalità&quot; all'altra. La musica indiana è fondata su una tonica immutabile, ma è anche vero che ogni cantante ha la sua tonica personale, e questo rende l'armonium estremamente flessibile se usato per accompagnare cantanti diversi che usano toniche diverse. Inoltre la tecnica di questo strumento, applicata alla musica indiana, è relativamente semplice.
+
+Tradizionalmente l'accompagnamento dei/delle cantanti classici era affidato al sarangi, strumento ad arco molto importante in India, dalla voce estremamente caratteristica (grazie anche alle numerose corde di risonanza), ma che per una serie di motivi si trovò a perdere in preminenza. Tra questi, la difficoltà tecnica che richiede grande dedizione da parte del musicista, ed il fatto di avere così tante corde di risonanza (che non hanno un ruolo marginale, ma sono molto importanti per la sua sonorità e per la creazione del giusto &quot;sentimento&quot; musicale). Ogni pezzo musicale (raga), basato su una diversa scala, richiede che queste corde vengano riaccordate (cosa che richiede tempo e perizia); inoltre se un medesimo sarangista si trova a dover accompagnare diversi cantanti che usano toniche diverse, deve riaccordare completamente l'intero strumento (quando non sostituire addirittura le [[Corda (musica)|corde]]).
+
+In più, i mutamenti sociali favoriti dalla dominazione coloniale britannica hanno contribuito a spingere nell'ombra i suonatori di sarangi, che si sono visti soppiantare dai nuovi suonatori di armonium: capaci di passare rapidamente da una tonica all'altra, in grado di accompagnare diversi cantanti in rapida sequenza, più adatti al nuovo contesto rapido e &quot;tecnologico&quot; che si stava formando (ad esempio i concerti radiofonici di All India Radio). La gran parte dei cantanti si è adattata a farsi accompagnare nelle loro esecuzioni dall'armonium, nonostante l'irrimediabile fatto di essere fuori intonazione. Fatto musicalmente accettabile se mantenuto in un ruolo marginale, che non si scontrasse con la voce (intonata correttamente) del/della cantante.
+
+Si venne così a creare un circolo vizioso in cui i sarangisti veramente esperti divennero pochi, ed i cantanti cominciarono a preferire i suonatori di armonium (stonati, ma sempre più intonati di un cattivo sarangista).}}
+
+== Note ==
+&lt;references /&gt;
+
+== Bibliografia ==
+* Alphonse Mustel, ''L'Orgue-Expressif ou Harmonium'', Mustel Père &amp; Fils, Paris 1903
+* Robert F. Gellerman, ''The American Reed Organ and the Harmonium'', The Vestal Press, Ldt. Vestal, New York 1996
+* Roberto Perinu, ''La Musica Indiana'', ed. Zanibon, Padova, 1981
+* [[Ali Akbar Khan]], George Ruckert, ''The Classical Music of North India'', Munshiram Manoharlal Publishers, New Delhi, India, 1998
+* David Courtney, Chandrakantha Courtney, ''Elementary North Indian Vocal'', Sur Sangeet Services, Houston, USA, 1995
+* Sandeep Bagchee, ''Nad – Understanding Raga Music'', Eshwar, Mumbai, India, 1998
+* [[Stuart Isacoff]], ''Temperamento – Storia di un Enigma Musicale'', ed. EDT, Torino, 2005
+
+== Altri progetti ==
+{{Interprogetto|wikt=harmonium|preposizione=sull'}}
+
+== Collegamenti esterni ==
+* {{Collegamenti esterni}}
+* {{cita web|http://harmoniums.weebly.com|Approfondimenti}}
+
+{{Controllo di autorità}}
+{{Portale|musica|storia}}
+
+[[Categoria:Organo]]
+[[Categoria:Cat1]]
+[[Categoria:Cat2]]
+[[Categoria:Cat3]]
+[[Categoria:Cat4]]</text>
+      <sha1>pjhsiy5jzb8yuko9miksvorij9bvtfq</sha1>
+    </revision>
+  </page>
+</mediawiki>
