@@ -25,6 +25,7 @@
       const search = instantsearch({
         searchClient,
         indexName: 'nodes_ml',
+        routing: true,
         searchFunction(helper) {
           const container = document.querySelector('#results');
           container.style.display = helper.state.query === '' ? 'none' : '';
