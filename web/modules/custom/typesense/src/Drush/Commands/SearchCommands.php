@@ -32,16 +32,16 @@ final class SearchCommands extends DrushCommands {
         ['name' => 'lang', 'type' => 'string'],
         ['name' => 'category', 'type' => 'string[]', 'facet' => true],
         ['name' => 'nid', 'type' => 'int32'],
-        [
-          'name' => 'embedding',
-          'type' => 'float[]',
-          'embed' => [
-            'from' => ['title', 'body'],
-            'model_config' => [
-              "model_name" => "sentence-bert-base-italian-uncased",
-            ],
-          ],
-        ],
+        // [
+        //   'name' => 'embedding',
+        //   'type' => 'float[]',
+        //   'embed' => [
+        //     'from' => ['title', 'body'],
+        //     'model_config' => [
+        //       "model_name" => "sentence-bert-base-italian-uncased",
+        //     ],
+        //   ],
+        // ],
       ],
       'default_sorting_field' => 'nid',
     ];
@@ -50,7 +50,7 @@ final class SearchCommands extends DrushCommands {
   }
 
   /**
-   * An example of the table output format.
+   * Import nodes from Wikipedia articles.
    */
   #[CLI\Command(name: 'typesense:import')]
   public function import(): void {
@@ -92,6 +92,7 @@ final class SearchCommands extends DrushCommands {
             'name' => $match[1],
           ]);
           $term->save();
+          $this->logger()->success(dt('Create term @name.', ['@name' => $match[1]]));
         }
         else {
           $term = reset($term);
@@ -101,15 +102,16 @@ final class SearchCommands extends DrushCommands {
       }
 
       Node::create([
-        'type' => 'page',
+        'type' => 'article',
         'title' => $page['title'],
         'body' => [
           'value' => $page['text'] ?? '',
           'format' => 'full_html',
         ],
-        'field_category' => $terms,
+        'field_tags' => $terms,
         'langcode' => 'en',
       ])->save();
+      $this->logger()->success(dt('Create node @name.', ['@name' => $page['title']]));
     }
   }
 
@@ -218,7 +220,7 @@ final class SearchCommands extends DrushCommands {
 
       $this->getClient()->collections['nodes_ml']->documents->upsert([
         'id' => $node->id(),
-        'title' => $node->getTitle(),
+        'title' => $node->getTitle() ?? 'no title',
         'body' => $node->get('body')->value ?? '',
         'lang' => $node->get('langcode')->value,
         'category' => $term_names,
