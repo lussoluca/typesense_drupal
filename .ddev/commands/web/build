@@ -4,3 +4,12 @@
 composer install --prefer-dist --no-interaction
 drush site-install --account-pass=admin -y
 drush cache:rebuild
+
+## Prepare the contents.
+wget https://dumps.wikimedia.org/itwiki/latest/itwiki-latest-pages-articles1.xml-p1p316052.bz2
+tar -xvjf itwiki-latest-pages-articles1.xml-p1p316052.bz2 -C ./web
+drush pm:enable typesense
+drush typesense:import
+drush typesense:create-collection
+drush typesense:index
+drush pm:uninstall search
