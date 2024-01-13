@@ -1,2 +1,2 @@
-FROM drupalpod/drupalpod-gitpod-base:20230922
+FROM drupalpod/drupalpod-gitpod-base:20231222
 SHELL ["/bin/bash", "-c"]
