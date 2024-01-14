@@ -1,0 +1,6 @@
+#!/bin/bash
+
+## Description: Build the website.
+composer install --prefer-dist --no-interaction
+drush site-install --account-pass=admin -y
+drush cache:rebuild
