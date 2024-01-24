@@ -20,7 +20,11 @@
         "drupal/core-project-message": "^10.2",
         "drupal/core-recommended": "^10.2",
         "drupal/devel": "^5.1",
+        "drupal/search_api": "^1.31",
+        "drupal/search_api_solr": "^4.3",
+        "drupal/webprofiler": "^10.1",
         "drush/drush": "^12.4",
+        "mglaman/composer-drupal-lenient": "^1.0",
         "php-http/curl-client": "^2.3",
         "typesense/typesense-php": "^4.9"
     },
@@ -36,7 +40,8 @@
             "drupal/core-project-message": true,
             "phpstan/extension-installer": true,
             "dealerdirect/phpcodesniffer-composer-installer": true,
-            "php-http/discovery": true
+            "php-http/discovery": true,
+            "mglaman/composer-drupal-lenient": true
         },
         "sort-packages": true
     },

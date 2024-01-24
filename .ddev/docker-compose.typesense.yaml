@@ -2,15 +2,39 @@
 services:
   typesense:
     container_name: ddev-${DDEV_SITENAME}-typesense
+    hostname: ${DDEV_SITENAME}-typesense
     image: typesense/typesense:0.25.2
+    command: '--data-dir /data --enable-cors'
     networks: [default, ddev_default]
-    restart: on-failure
+    restart: "on-failure"
+    environment:
+      - TYPESENSE_API_KEY=${TYPESENSE_API_KEY:-ddev}
     ports:
       - "8108:8108"
     labels:
       com.ddev.site-name: ${DDEV_SITENAME}
       com.ddev.approot: $DDEV_APPROOT
     volumes:
+      - "typesense:/data"
       - ".:/mnt/ddev_config"
-      - "./typesense-data:/data"
-    command: '--data-dir /data --api-key=xyz --enable-cors'
+  # This links the Typesense service to the web service defined in the main
+  # docker-compose.yml, allowing applications running inside the web container to
+  # access the Typesense service at http://typesense:8108
+  web:
+    links:
+      - typesense:typesense
+  typesense_admin:
+    container_name: ddev-${DDEV_SITENAME}-typesense-admin
+    image: ghcr.io/bfritscher/typesense-dashboard:latest
+    restart: always
+    labels:
+      com.ddev.site-name: ${DDEV_SITENAME}
+      com.ddev.approot: $DDEV_APPROOT
+    ports:
+      - "8109:80"
+    environment:
+      - VIRTUAL_HOST=typesense.$DDEV_HOSTNAME
+    external_links:
+      - "ddev-router:${DDEV_SITENAME}.${DDEV_TLD}"
+volumes:
+  typesense:

@@ -1,3 +1,11 @@
+typesense.settings:
+  path: '/admin/config/search/typesense'
+  defaults:
+    _form: '\Drupal\typesense\Form\SettingsForm'
+    _title: 'Typesense settings'
+  requirements:
+    _permission: 'administer typesense configuration'
+
 typesense.search:
   path: '/search'
   defaults:

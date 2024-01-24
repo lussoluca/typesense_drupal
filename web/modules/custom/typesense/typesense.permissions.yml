@@ -1,0 +1,3 @@
+administer typesense configuration:
+  description: 'Configure schema, synonyms and rules'
+  title: 'Administer typesense configuration'

@@ -13,4 +13,4 @@
 3. Run `ddev build`
 4. Navigate to `https://typesense-drupal.ddev.site/search` and search for something.
 
-A dashboard for Typesense is available at `https://bfritscher.github.io/typesense-dashboard`, the API key is `xyz`.
+A dashboard for Typesense is available at `http://typesense-drupal.ddev.site:8109/#/login`, the API key is `ddev`.

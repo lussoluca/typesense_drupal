@@ -1,0 +1,5 @@
+typesense.settings:
+  title: 'Typesense settings'
+  description: 'Configure schema, synonyms and rules.'
+  route_name: typesense.settings
+  parent: 'system.admin_config_search'

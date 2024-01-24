@@ -240,7 +240,7 @@ final class SearchCommands extends DrushCommands {
   private function getClient(): Client {
     return new Client(
       [
-        'api_key' => 'xyz',
+        'api_key' => 'ddev',
         'nodes' => [
           [
             'host' => 'typesense',
