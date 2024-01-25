@@ -3,9 +3,8 @@
 namespace Drupal\search_api_typesense\Api;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\DependencyInjection\DependencySerializationTrait;
 use Drupal\search_api_typesense\Client\SearchApiTypesenseClientFactoryInterface;
-use Http\Client\Exception\NetworkException;
-//
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 
 /**
@@ -18,6 +17,7 @@ use Drupal\Core\StringTranslation\StringTranslationTrait;
 class SearchApiTypesenseService implements SearchApiTypesenseServiceInterface {
 
   use StringTranslationTrait;
+  use DependencySerializationTrait;
 
   /**
    * The ConfigFactory instance.

@@ -3,21 +3,14 @@
 namespace Drupal\search_api_typesense\Plugin\search_api\backend;
 
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Link;
-use Drupal\Core\Messenger\Messenger;
 use Drupal\Core\Plugin\PluginFormInterface;
-use Drupal\Core\Url;
-use Drupal\search_api\DataType\DataTypeInterface;
 use Drupal\search_api\Plugin\PluginFormTrait;
-use Drupal\search_api\SearchApiException;
 use Drupal\search_api\Utility\DataTypeHelperInterface;
-use Drupal\search_api\Utility\FieldsHelperInterface;
 use Drupal\search_api_typesense\Api\SearchApiTypesenseException;
 use Drupal\search_api_typesense\Api\SearchApiTypesenseServiceInterface;
 use Drupal\search_api\Backend\BackendPluginBase;
 use Drupal\search_api\IndexInterface;
 use Drupal\search_api\Query\QueryInterface;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
@@ -38,55 +31,6 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
   use PluginFormTrait;
 
   /**
-   * The config factory service.
-   *
-   * @var \Drupal\Core\Config\ConfigFactoryInterface
-   */
-  protected $configFactory;
-
-  /**
-   * The Typesense service.
-   *
-   * @var \Drupal\search_api_typesense\Api\SearchApiTypesenseServiceInterface
-   */
-  protected $typesense;
-
-  /**
-   * The logger.
-   *
-   * @var \Psr\Log\LoggerInterface|null
-   */
-  protected $logger;
-
-  /**
-   * The language manager.
-   *
-   * @var \Drupal\Core\Language\LanguageManagerInterface;
-   */
-  protected $languageManager;
-
-  /**
-   * The messenger instance.
-   *
-   * @var \Drupal\Core\Messenger\Messenger
-   */
-  protected $messenger;
-
-  /**
-   * The fields helper.
-   *
-   * @var \Drupal\search_api\Utility\FieldsHelperInterface
-   */
-  protected $fieldsHelper;
-
-  /**
-   * The data type helper.
-   *
-   * @var \Drupal\search_api\Utility\DataTypeHelper|null
-   */
-  protected $dataTypeHelper;
-
-  /**
    * The server corresponding to this backend.
    *
    * @var \Drupal\search_api\Entity\Server
@@ -98,21 +42,21 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
    *
    * @var array
    */
-  protected $indexes;
+  protected array $indexes;
 
   /**
    * The set of Typesense collections on this server.
    *
    * @var array
    */
-  protected $collections;
+  protected array $collections;
 
   /**
    * The auth credentials for the current server.
    *
-   * @var array
+   * @var array|bool
    */
-  protected $serverAuth;
+  protected array|bool $serverAuth;
 
   /**
    * Constructs a Typesense backend plugin.
@@ -123,31 +67,35 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
    *   The plugin id.
    * @param mixed $plugin_definition
    *   A plugin definition.
-   * @param \Drupal\search_api_typesense\Api\SearchApiTypesenseServiceInterface $typesenseService
+   * @param \Drupal\search_api_typesense\Api\SearchApiTypesenseServiceInterface $typesense
    *   The Typesense service.
    * @param \Psr\Log\LoggerInterface $logger
    *   The logger interface.
-   * @param \Drupal\search_api\Utility\FieldsHelperInterface $fields_helper
+   * @param \Drupal\search_api\Utility\FieldsHelperInterface $fieldsHelper
    *   The fields helper.
-   * @param \Drupal\search_api\Utility\DataTypeHelperInterface $data_type_helper
+   * @param \Drupal\search_api\Utility\DataTypeHelperInterface $dataTypeHelper
    *   The data type helper.
-   * @param \Drupal\Core\Language\LanguageManager
+   * @param \Drupal\Core\Language\LanguageManager $languageManager
    *   The Language manager.
-   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $configFactory
    *   The config factory.
    * @param \Drupal\Core\Messenger\Messenger $messenger
    *   The messenger.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, SearchApiTypesenseServiceInterface $typesense, LoggerInterface $logger, FieldsHelperInterface $fields_helper, DataTypeHelperInterface $data_type_helper, LanguageManagerInterface $language_manager, ConfigFactoryInterface $config_factory, Messenger $messenger) {
+  public function __construct(
+    array $configuration,
+    $plugin_id,
+    $plugin_definition,
+    private readonly SearchApiTypesenseServiceInterface $typesense,
+    protected $logger,
+    protected $fieldsHelper,
+    private readonly DataTypeHelperInterface $dataTypeHelper,
+    private readonly LanguageManagerInterface $languageManager,
+    private readonly ConfigFactoryInterface $configFactory,
+    protected $messenger
+  ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
 
-    $this->logger = $logger;
-    $this->fieldsHelper = $fields_helper;
-    $this->dataTypeHelper = $data_type_helper;
-    $this->languageManager = $language_manager;
-    $this->configFactory = $config_factory;
-    $this->messenger = $messenger;
-    $this->typesense = $typesense;
     // Don't try to get indexes from server that is not created yet.
     if (!$this->server) {
       return;
