@@ -1,11 +1,15 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Drupal\search_api_typesense\Api;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\DependencyInjection\DependencySerializationTrait;
-use Drupal\search_api_typesense\Client\SearchApiTypesenseClientFactoryInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\search_api_typesense\Client\SearchApiTypesenseClientFactoryInterface;
+use Typesense\Client;
+use Typesense\Collection;
 
 /**
  * Class SearchApiTypesenseService.
@@ -29,16 +33,16 @@ class SearchApiTypesenseService implements SearchApiTypesenseServiceInterface {
   /**
    * The Typesense client.
    *
-   * @var \Typesense\Client
+   * @var \Typesense\Client|null
    */
-  protected $client;
+  protected ?Client $client = NULL;
 
   /**
    * The Typesense client factory.
    *
    * @var \Drupal\search_api_typesense\Client\SearchApiTypesenseClientFactoryInterface
    */
-  protected $clientFactory;
+  protected SearchApiTypesenseClientFactoryInterface $clientFactory;
 
   /**
    * The Typesense schema.
@@ -63,7 +67,7 @@ class SearchApiTypesenseService implements SearchApiTypesenseServiceInterface {
   /**
    * {@inheritdoc}
    */
-  public function connection() {
+  public function connection(): Client {
     if ($this->client === NULL) {
       $this->client = $this->clientFactory->getInstance($this->getAuthorization());
 
@@ -81,7 +85,7 @@ class SearchApiTypesenseService implements SearchApiTypesenseServiceInterface {
   /**
    * {@inheritdoc}
    */
-  public function setAuthorization(string $api_key, array $nodes, int $connection_timeout_seconds) {
+  public function setAuthorization(string $api_key, array $nodes, int $connection_timeout_seconds): void {
     $this->auth = [
       'api_key' => $api_key,
       'nodes' => $nodes,
@@ -92,14 +96,14 @@ class SearchApiTypesenseService implements SearchApiTypesenseServiceInterface {
   /**
    * {@ihneritdoc}
    */
-  public function getAuthorization() {
+  public function getAuthorization(): array {
     return $this->auth;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function searchDocuments(string $collection_name, array $parameters) {
+  public function searchDocuments(string $collection_name, array $parameters): array {
     try {
       if (empty($collection_name) || empty($parameters)) {
         return [];
@@ -121,7 +125,7 @@ class SearchApiTypesenseService implements SearchApiTypesenseServiceInterface {
   /**
    * {@inheritdoc}
    */
-  public function retrieveCollection(string $collection_name) {
+  public function retrieveCollection(string $collection_name): ?Collection {
     try {
       $collection = $this->connection()->collections[$collection_name];
       // Ensure that collection exists on the typesense server by retrieving it.
@@ -137,7 +141,7 @@ class SearchApiTypesenseService implements SearchApiTypesenseServiceInterface {
   /**
    * {@inheritdoc}
    */
-  public function createCollection(array $schema) {
+  public function createCollection(array $schema): Collection {
     try {
       return $this->connection()->collections->create($schema);
     }
@@ -149,7 +153,7 @@ class SearchApiTypesenseService implements SearchApiTypesenseServiceInterface {
   /**
    * {@inheritdoc}
    */
-  public function dropCollection(string $collection_name) {
+  public function dropCollection(?string $collection_name): Collection {
     try {
       $this->connection()->collections[$collection_name]->delete();
     }
@@ -161,7 +165,7 @@ class SearchApiTypesenseService implements SearchApiTypesenseServiceInterface {
   /**
    * {@inheritdoc}
    */
-  public function retrieveCollections() {
+  public function retrieveCollections(): array {
     try {
       return $this->connection()->collections->retrieve();
     }
@@ -173,7 +177,7 @@ class SearchApiTypesenseService implements SearchApiTypesenseServiceInterface {
   /**
    * {@inheritdoc}
    */
-  public function createDocument(string $collection_name, array $document) {
+  public function createDocument(string $collection_name, array $document): array {
     try {
       $collection = $this->retrieveCollection($collection_name);
 
@@ -193,7 +197,7 @@ class SearchApiTypesenseService implements SearchApiTypesenseServiceInterface {
   /**
    * {@inheritdoc}
    */
-  public function retrieveDocument(string $collection_name, string $id) {
+  public function retrieveDocument(string $collection_name, string $id): array {
     try {
       $collection = $this->retrieveCollection($collection_name);
 
@@ -211,7 +215,7 @@ class SearchApiTypesenseService implements SearchApiTypesenseServiceInterface {
   /**
    * {@inheritdoc}
    */
-  public function deleteDocument(string $collection_name, string $id) {
+  public function deleteDocument(string $collection_name, string $id): array {
     try {
       $collection = $this->retrieveCollection($collection_name);
 
@@ -229,7 +233,7 @@ class SearchApiTypesenseService implements SearchApiTypesenseServiceInterface {
   /**
    * {@inheritdoc}
    */
-  public function deleteDocuments(string $collection_name, array $filter_condition) {
+  public function deleteDocuments(string $collection_name, array $filter_condition): array {
     try {
       $collection = $this->retrieveCollection($collection_name);
 
@@ -247,7 +251,7 @@ class SearchApiTypesenseService implements SearchApiTypesenseServiceInterface {
   /**
    * {@inheritdoc}
    */
-  public function createSynonym(string $collection_name, string $id, array $synonym) {
+  public function createSynonym(string $collection_name, string $id, array $synonym): array {
     try {
       $collection = $this->retrieveCollection($collection_name);
 
@@ -267,7 +271,7 @@ class SearchApiTypesenseService implements SearchApiTypesenseServiceInterface {
   /**
    * {@inheritdoc}
    */
-  public function retrieveSynonym(string $collection_name, string $id) {
+  public function retrieveSynonym(string $collection_name, string $id): array {
     try {
       $collection = $this->retrieveCollection($collection_name);
 
@@ -285,7 +289,7 @@ class SearchApiTypesenseService implements SearchApiTypesenseServiceInterface {
   /**
    * {@inheritdoc}
    */
-  public function retrieveSynonyms(string $collection_name) {
+  public function retrieveSynonyms(string $collection_name): array {
     try {
       $collection = $this->retrieveCollection($collection_name);
 
@@ -303,7 +307,7 @@ class SearchApiTypesenseService implements SearchApiTypesenseServiceInterface {
   /**
    * {@inheritdoc}
    */
-  public function deleteSynonym(string $collection_name, string $id) {
+  public function deleteSynonym(string $collection_name, string $id): array {
     try {
       $collection = $this->retrieveCollection($collection_name);
 
@@ -321,7 +325,7 @@ class SearchApiTypesenseService implements SearchApiTypesenseServiceInterface {
   /**
    * {@inheritdoc}
    */
-  public function retrieveHealth() {
+  public function retrieveHealth(): array {
     try {
       return $this->connection()->health->retrieve();
     }
@@ -333,7 +337,7 @@ class SearchApiTypesenseService implements SearchApiTypesenseServiceInterface {
   /**
    * {@inheritdoc}
    */
-  public function retrieveDebug() {
+  public function retrieveDebug(): array {
     try {
       return $this->connection()->debug->retrieve();
     }
@@ -345,7 +349,7 @@ class SearchApiTypesenseService implements SearchApiTypesenseServiceInterface {
   /**
    * {@inheritdoc}
    */
-  public function getKeys() {
+  public function getKeys(): array {
     try {
       return $this->connection()->getKeys();
     }
@@ -363,7 +367,7 @@ class SearchApiTypesenseService implements SearchApiTypesenseServiceInterface {
    *     declared type.
    *   - Equip this function to handle multiples (i.e. int32[] etc).
    */
-  public function prepareItemValue($value, $type) {
+  public function prepareItemValue($value, $type): array {
     if (is_array($value) && count($value <= 1)) {
       $value = reset($value);
     }

@@ -1,0 +1,11 @@
+search_api_typesense.server.status:
+  route_name: search_api_typesense.server.status
+  base_route: entity.search_api_server.canonical
+  title: 'Server status'
+  weight: 5
+
+search_api_typesense.collection.synonyms:
+  route_name: search_api_typesense.collection.synonyms
+  base_route: entity.search_api_index.canonical
+  title: 'Synonyms'
+  weight: 20

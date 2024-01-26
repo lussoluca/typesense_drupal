@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Drupal\search_api_typesense\Plugin\search_api\data_type;
 
 use Drupal\search_api\DataType\DataTypePluginBase;

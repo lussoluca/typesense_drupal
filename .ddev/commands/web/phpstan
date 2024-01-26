@@ -1,0 +1,3 @@
+#!/bin/bash
+
+vendor/bin/phpstan analyze -c web/modules/custom/search_api_typesense/phpstan.neon web/modules/custom/search_api_typesense

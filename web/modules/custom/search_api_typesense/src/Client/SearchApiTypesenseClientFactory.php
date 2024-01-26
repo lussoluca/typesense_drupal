@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Drupal\search_api_typesense\Client;
 
 use Drupal\search_api_typesense\Api\SearchApiTypesenseException;
@@ -15,7 +17,7 @@ class SearchApiTypesenseClientFactory implements SearchApiTypesenseClientFactory
   /**
    * {@inheritdoc}
    */
-  public function getInstance(array $settings) {
+  public function getInstance(array $settings): Client {
     try {
       return new Client($settings);
     }

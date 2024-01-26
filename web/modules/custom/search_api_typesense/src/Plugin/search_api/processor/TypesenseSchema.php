@@ -1,16 +1,12 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Drupal\search_api_typesense\Plugin\search_api\processor;
 
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\search_api\Item\FieldInterface;
-use Drupal\search_api\Plugin\search_api\data_type\value\TextValueInterface;
 use Drupal\search_api\Processor\FieldsProcessorPluginBase;
 use Drupal\search_api\Utility\DataTypeHelperInterface;
-use Drupal\search_api\Utility\Utility;
-use Symfony\Component\Yaml\Dumper;
-use Symfony\Component\Yaml\Exception\ParseException;
-use Symfony\Component\Yaml\Parser;
 
 /**
  * Configures Typesense schema using search_api_typesense fields.
@@ -42,7 +38,7 @@ class TypesenseSchema extends FieldsProcessorPluginBase {
    * @return \Drupal\search_api\Utility\DataTypeHelperInterface
    *   The data type helper.
    */
-  public function getDataTypeHelper() {
+  public function getDataTypeHelper(): DataTypeHelperInterface {
     return $this->dataTypeHelper ?: \Drupal::service('search_api.data_type_helper');
   }
 
@@ -165,7 +161,6 @@ class TypesenseSchema extends FieldsProcessorPluginBase {
     //   '#description' => $this->t('When this form was last saved, the Typesense schema was configured as shown here. <strong>Note</strong>: this field is only used for reference'),
     //   '#open' => FALSE,
     // ];
-
     // // We're going to need to build the Typesense schema elsewhere in order to
     // // display it here.
     // $form['generated_schema']['code'] = [
@@ -175,7 +170,6 @@ class TypesenseSchema extends FieldsProcessorPluginBase {
     //     'schema' => var_export($this->getTypesenseSchema(), TRUE),
     //   ],
     // ];
-
     return $form;
   }
 
@@ -190,7 +184,7 @@ class TypesenseSchema extends FieldsProcessorPluginBase {
    *
    * @return array $sorting_field_options
    */
-  public function getSortingFieldOptions() {
+  public function getSortingFieldOptions(): array {
     $sorting_field_options = [];
 
     foreach ($this->getIndex()->getFields() as $field) {
@@ -199,7 +193,7 @@ class TypesenseSchema extends FieldsProcessorPluginBase {
         $sorting_field_options[$field->getFieldIdentifier()] = sprintf(
           '%s (%s)',
           $field->getLabel(),
-          $this->getTypesenseDatatype($field_type)
+          $this->getTypesenseDatatype($field_type),
         );
       }
     }
@@ -223,10 +217,10 @@ class TypesenseSchema extends FieldsProcessorPluginBase {
   /**
    * Transforms the form data from the processor into a Typesense schema.
    *
-   * @return array $typesense_schema
+   * @return array
    *   The schema based on the current configuration of the processor.
    */
-  public function getTypesenseSchema() {
+  public function getTypesenseSchema(): array {
     if (!isset($this->configuration['schema'])) {
       return [];
     }

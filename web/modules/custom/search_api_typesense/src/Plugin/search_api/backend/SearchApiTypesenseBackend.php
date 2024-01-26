@@ -1,19 +1,21 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Drupal\search_api_typesense\Plugin\search_api\backend;
 
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Plugin\PluginFormInterface;
+use Drupal\search_api\Backend\BackendPluginBase;
+use Drupal\search_api\IndexInterface;
 use Drupal\search_api\Plugin\PluginFormTrait;
+use Drupal\search_api\Query\QueryInterface;
 use Drupal\search_api\Utility\DataTypeHelperInterface;
 use Drupal\search_api_typesense\Api\SearchApiTypesenseException;
 use Drupal\search_api_typesense\Api\SearchApiTypesenseServiceInterface;
-use Drupal\search_api\Backend\BackendPluginBase;
-use Drupal\search_api\IndexInterface;
-use Drupal\search_api\Query\QueryInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Language\LanguageManagerInterface;
-use Drupal\Core\Config\ConfigFactoryInterface;
 
 /**
  * Class SearchApiTypesenseBackend.
@@ -129,7 +131,7 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
     //      'q' => 'volks',
     //      'query_by' => 'field_vehicle_make__name,field_vehicle_model__name',
     //    ]),
-    // ]);
+    // ]);.
   }
 
   /**
@@ -146,7 +148,7 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
       $container->get('search_api.data_type_helper'),
       $container->get('language_manager'),
       $container->get('config.factory'),
-      $container->get('messenger')
+      $container->get('messenger'),
     );
   }
 
@@ -229,7 +231,7 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
    *
    * @return array|FALSE
    */
-  protected function getServerAuth($read_only = TRUE) {
+  protected function getServerAuth($read_only = TRUE): array|false {
     $api_key_key = $read_only ? 'ro_api_key' : 'rw_api_key';
 
     $config = $this->configFactory->get('search_api.server.' . $this->server->id())->get('backend_config');
@@ -237,10 +239,10 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
     if (isset($config[$api_key_key], $config['nodes'], $config['connection_timeout_seconds'])) {
       $auth = [
         'api_key' => $config[$api_key_key],
-        'nodes' => array_filter($config['nodes'], function($key) {
+        'nodes' => array_filter($config['nodes'], function ($key) {
           return is_numeric($key);
         }, ARRAY_FILTER_USE_KEY),
-        'connection_timeout_seconds' => $config['connection_timeout_seconds'],
+        'connection_timeout_seconds' => intval($config['connection_timeout_seconds']),
       ];
     }
 
@@ -253,7 +255,7 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
    * @return array
    *   A Typesense schema array or [].
    */
-  protected function getSchema($collection_name) {
+  protected function getSchema($collection_name): array {
     $typesense_schema_processor = $this->indexes[$collection_name]->getProcessor('typesense_schema');
 
     return $typesense_schema_processor->getTypesenseSchema();
@@ -279,7 +281,7 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
    * the index's fields and Typsense Schema processor must already be configured
    * before the collection can be created in the first place.
    */
-  protected function syncIndexesAndCollections() {
+  protected function syncIndexesAndCollections(): void {
     try {
       // If there are no indexes, we have nothing to do.
       if (empty($this->indexes)) {
@@ -362,7 +364,7 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
       '#title' => $this->t('Nodes'),
       '#description' => $this->t('The Typesense server node(s).'),
       '#attributes' => [
-        'id' => 'nodes-fieldset-wrapper'
+        'id' => 'nodes-fieldset-wrapper',
       ],
     ];
 
@@ -465,7 +467,7 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
    *
    * Increments the max counter and triggers a rebuild.
    */
-  public function addNode(array &$form, FormStateInterface $form_state) {
+  public function addNode(array &$form, FormStateInterface $form_state): void {
     $node_field = $form_state->get('num_nodes');
 
     $add_button = $node_field + 1;
@@ -479,7 +481,7 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
    *
    * Decrements the max counter and causes a form rebuild.
    */
-  public function removeNode(array $form, FormStateInterface $form_state) {
+  public function removeNode(array $form, FormStateInterface $form_state): void {
     $node_field = $form_state->get('num_nodes');
 
     if ($node_field > 1) {
@@ -582,35 +584,27 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
    *   - Currently this is handled (apparently well enough?) in this class, by
    *     the SearchApiTypesenseBackend::syncIndexesAndCollections() method.
    */
-  // public function addIndex(IndexInterface $index) {
+  // Public function addIndex(IndexInterface $index) {
   //   try {
   //     $index_fields = $index->getFields();
-
-  //     if (empty($index_fields)) {
+  // if (empty($index_fields)) {
   //       return;
-  //     }
-
-  //     if (!isset($default_sorting_field)) {
+  //     }.
+  // if (!isset($default_sorting_field)) {
   //       return;
-  //     }
-
-  //     // $collection_name = $index->id();
-
-  //     // $index_fields = $index->getFields();
+  //     }.
+  // // $collection_name = $index->id();
+  // // $index_fields = $index->getFields();
   //     // $typesense_fields = [];
-
-  //     // $schema = [
+  // // $schema = [
   //     //   'name' => $collection_name,
   //     //   'fields' => $typesense_fields,
   //     // ];
-
-  //     // if ($default_sorting_field) {
+  // // if ($default_sorting_field) {
   //     //   $schema['default_sorting_field'] = $default_sorting_field;
   //     // }
-
-  //     // $this->typesense->createCollection($schema);
-
-  //     // ksm($this->typesense->retrieveCollection($collection_name));
+  // // $this->typesense->createCollection($schema);
+  // // ksm($this->typesense->retrieveCollection($collection_name));
   //   }
   //   catch (SearchApiTypesenseException $e) {
   //     $this->logger->error($e->getMessage());
@@ -618,7 +612,7 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
   //       '@index' => $collection_name,
   //     ]));
   //   }
-  // }
+  // }.
 
   /**
    * {@inheritdoc}
@@ -661,7 +655,7 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
   /**
    *
    */
-  public function updateIndex(IndexInterface $index) {
+  public function updateIndex(IndexInterface $index): void {
     try {
       if ($this->indexFieldsUpdated($index)) {
         $index->reindex();
@@ -686,7 +680,7 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
    * @return bool
    *   TRUE if any of the fields were updated, FALSE otherwise.
    */
-  public function indexFieldsUpdated(IndexInterface $index) {
+  public function indexFieldsUpdated(IndexInterface $index): bool {
     if (!isset($index->original)) {
       return TRUE;
     }

@@ -1,6 +1,10 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Drupal\search_api_typesense\Client;
+
+use Typesense\Client;
 
 /**
  * Interface SearchApiTypesenseClientInterface.
@@ -15,11 +19,11 @@ interface SearchApiTypesenseClientFactoryInterface {
    * @param array $settings
    *   The settings for a Typesense server connection.
    *
-   * @return Typesense\Client
+   * @return \Typesense\Client
    *   A Typesense client.
    *
    * @see https://typesense.org/docs/0.19.0/api/authentication.html
    */
-  public function getInstance(array $settings);
+  public function getInstance(array $settings): Client;
 
 }

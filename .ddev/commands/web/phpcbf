@@ -1,0 +1,3 @@
+#!/bin/bash
+
+vendor/bin/phpcbf -ps --standard="web/modules/custom/search_api_typesense/phpcs.xml.dist" web/modules/custom/search_api_typesense

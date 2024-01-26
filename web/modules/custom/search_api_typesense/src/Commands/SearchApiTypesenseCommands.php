@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Drupal\search_api_typesense\Commands;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
@@ -29,12 +31,12 @@ class SearchApiTypesenseCommands extends DrushCommands {
    * Typesense search arguments.
    */
   const SEARCH_ARGUMENTS = [
-    // q and query_by are required, so we use them as the function arguments
+    // Q and query_by are required, so we use them as the function arguments
     // while treating all the rest of the available arguments as options to
     // the command.
     //
     // 'q' => '*',
-    // 'query_by' => '',
+    // 'query_by' => '',.
     'query-by-weights' => '',
     'prefix' => '',
     'filter-by' => '',
@@ -150,14 +152,13 @@ class SearchApiTypesenseCommands extends DrushCommands {
     }
 
     $api_key = $server_auth[$api_key_key];
-    $nodes = array_filter($server_auth['nodes'], function($key) {
+    $nodes = array_filter($server_auth['nodes'], function ($key) {
       return is_numeric($key);
     }, ARRAY_FILTER_USE_KEY);
     $connection_timeout_seconds = $server_auth['connection_timeout_seconds'];
 
     // Get the vars we need from the array.
     // extract($server_auth);
-
     // Connect to the server--there's no point going any further if we can't.
     $this->typesense->setAuthorization($api_key, $nodes, $connection_timeout_seconds);
   }
@@ -188,6 +189,7 @@ class SearchApiTypesenseCommands extends DrushCommands {
    *   Separate multiple fields with a comma: company_name, country.
    * @param array $options
    *   These are the Typesense search arguments used to configure the query.
+   *
    * @option query-by-weights
    *  The relative weight to give each query_by field when ranking results.
    *  This can be used to boost fields in priority, when looking for matches.
@@ -287,7 +289,7 @@ class SearchApiTypesenseCommands extends DrushCommands {
    *     SolrConnector, we could presumably use that as a more direct route to
    *     the same destination...
    */
-  public function query($collection_name, $q, $query_by, $options = self::SEARCH_ARGUMENTS) {
+  public function query($collection_name, $q, $query_by, $options = self::SEARCH_ARGUMENTS): void {
     // Do NOT pass certain options on to the Typesense service (because it
     // won't recognize them).
     $exclude_options = [
@@ -316,7 +318,6 @@ class SearchApiTypesenseCommands extends DrushCommands {
     // Run the query.
     $results = $this->typesense->searchDocuments($collection_name, $arguments);
 
-    //
     if (!empty($results['hits'])) {
       // If we have results, we have lots to say about them.
       //
@@ -354,7 +355,7 @@ class SearchApiTypesenseCommands extends DrushCommands {
 
     // Output a summary of the search info.
     $this->output->writeln('');
-    $this->output->writeln('<info>' . dt('@found results returned from @out_of indexed documents in @search_time_ms ms.'. '</info>', [
+    $this->output->writeln('<info>' . dt('@found results returned from @out_of indexed documents in @search_time_ms ms.' . '</info>', [
       '@found' => $results['found'],
       '@out_of' => $results['out_of'],
       '@search_time_ms' => $results['search_time_ms'],

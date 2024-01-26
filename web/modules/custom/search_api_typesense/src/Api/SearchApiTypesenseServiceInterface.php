@@ -1,6 +1,11 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Drupal\search_api_typesense\Api;
+
+use Typesense\Client;
+use Typesense\Collection;
 
 /**
  * Interface SearchApiTypesenseServiceInterface.
@@ -26,7 +31,7 @@ interface SearchApiTypesenseServiceInterface {
    *
    * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
    */
-  public function connection();
+  public function connection(): Client;
 
   /**
    * Sets authentication parameters for the connection instance.
@@ -38,7 +43,7 @@ interface SearchApiTypesenseServiceInterface {
    * @param int $connection_timeout_seconds
    *   The connection timout for the server or cluster (in seconds).
    */
-  public function setAuthorization(string $api_key, array $nodes, int $connection_timeout_seconds);
+  public function setAuthorization(string $api_key, array $nodes, int $connection_timeout_seconds): void;
 
   /**
    * Gets authentication parameters for connection instance.
@@ -46,7 +51,7 @@ interface SearchApiTypesenseServiceInterface {
    * @return array
    *   Authorization details.
    */
-  public function getAuthorization();
+  public function getAuthorization(): array;
 
   /**
    * Searches specified collection for given string.
@@ -63,7 +68,7 @@ interface SearchApiTypesenseServiceInterface {
    *
    * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
    */
-  public function searchDocuments(string $collection_name, array $parameters);
+  public function searchDocuments(string $collection_name, array $parameters): array;
 
   /**
    * Gets a Typesense collection.
@@ -77,7 +82,7 @@ interface SearchApiTypesenseServiceInterface {
    *
    * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseExceptiono
    */
-  public function retrieveCollection(string $collection_name);
+  public function retrieveCollection(string $collection_name): ?Collection;
 
   /**
    * Creates a Typesense collection.
@@ -85,27 +90,23 @@ interface SearchApiTypesenseServiceInterface {
    * @param array $schema
    *   A typesense schema.
    *
-   * @return Typesense\Collection
-   *
    * @see https://typesense.org/docs/0.19.0/api/collections.html#create-a-collection
    *
    * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
    */
-  public function createCollection(array $schema);
+  public function createCollection(array $schema): Collection;
 
   /**
    * Removes a Typesense index.
    *
-   * @param string $collection_name
+   * @param string|null $collection_name
    *   The name of the index to remove.
-   *
-   * @return Typesense\Collection
    *
    * @see https://typesense.org/docs/0.19.0/api/collections.html#drop-a-collection
    *
    * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
    */
-  public function dropCollection(string $collection_name);
+  public function dropCollection(?string $collection_name): Collection;
 
   /**
    * Lists all collections.
@@ -117,7 +118,7 @@ interface SearchApiTypesenseServiceInterface {
    *
    * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
    */
-  public function retrieveCollections();
+  public function retrieveCollections(): array;
 
   /**
    * Adds a document to a collection, or updates an existing document.
@@ -133,7 +134,7 @@ interface SearchApiTypesenseServiceInterface {
    *
    * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
    */
-  public function createDocument(string $collection_name, array $document);
+  public function createDocument(string $collection_name, array $document): array;
 
   /**
    * Retrieves a specific indexd document.
@@ -150,7 +151,7 @@ interface SearchApiTypesenseServiceInterface {
    *
    * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
    */
-  public function retrieveDocument(string $collection_name, string $id);
+  public function retrieveDocument(string $collection_name, string $id): array;
 
   /**
    * Deletes a specific indexed document.
@@ -167,7 +168,7 @@ interface SearchApiTypesenseServiceInterface {
    *
    * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
    */
-  public function deleteDocument(string $collection_name, string $id);
+  public function deleteDocument(string $collection_name, string $id): array;
 
   /**
    * Deletes all documents satisfying a certain condition.
@@ -184,7 +185,7 @@ interface SearchApiTypesenseServiceInterface {
    *
    * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
    */
-  public function deleteDocuments(string $collection_name, array $filter_condition);
+  public function deleteDocuments(string $collection_name, array $filter_condition): array;
 
   /**
    * Adds a synonym to a collection, or updates an existing synonym.
@@ -203,7 +204,7 @@ interface SearchApiTypesenseServiceInterface {
    *
    * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
    */
-  public function createSynonym(string $collection_name, string $id, array $synonym);
+  public function createSynonym(string $collection_name, string $id, array $synonym): array;
 
   /**
    * Retrieves a specific indexed synonym.
@@ -220,7 +221,7 @@ interface SearchApiTypesenseServiceInterface {
    *
    * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
    */
-  public function retrieveSynonym(string $collection_name, string $id);
+  public function retrieveSynonym(string $collection_name, string $id): array;
 
   /**
    * Retrieves all indexed synonyms.
@@ -235,7 +236,7 @@ interface SearchApiTypesenseServiceInterface {
    *
    * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
    */
-  public function retrieveSynonyms(string $collection_name);
+  public function retrieveSynonyms(string $collection_name): array;
 
   /**
    * Deletes a specific indexed synonym.
@@ -252,7 +253,7 @@ interface SearchApiTypesenseServiceInterface {
    *
    * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
    */
-  public function deleteSynonym(string $collection_name, string $id);
+  public function deleteSynonym(string $collection_name, string $id): array;
 
   /**
    * Returns the health of the Typesense server.
@@ -262,7 +263,7 @@ interface SearchApiTypesenseServiceInterface {
    *
    * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
    */
-  public function retrieveHealth();
+  public function retrieveHealth(): array;
 
   /**
    * Returns the debug info from the Typesense server.
@@ -272,7 +273,7 @@ interface SearchApiTypesenseServiceInterface {
    *
    * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
    */
-  public function retrieveDebug();
+  public function retrieveDebug(): array;
 
   /**
    * Returns current server keys.
@@ -282,7 +283,7 @@ interface SearchApiTypesenseServiceInterface {
    *
    * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
    */
-  public function getKeys();
+  public function getKeys(): array;
 
   /**
    * Prepares items for typesense-indexing.
@@ -292,11 +293,11 @@ interface SearchApiTypesenseServiceInterface {
    * @param string $type
    *   The specified data type from the Search API index configuration.
    *
-   * @return array $value
+   * @return array
    *   The prepared item, ready for Typesense indexing.
    *
    * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
    */
-  public function prepareItemValue($value, $type);
+  public function prepareItemValue($value, $type): array;
 
 }
