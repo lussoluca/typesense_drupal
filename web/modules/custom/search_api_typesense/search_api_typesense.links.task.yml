@@ -1,7 +1,7 @@
-search_api_typesense.server.status:
-  route_name: search_api_typesense.server.status
+search_api_typesense.server.metrics:
+  route_name: search_api_typesense.server.metrics
   base_route: entity.search_api_server.canonical
-  title: 'Server status'
+  title: 'Server metrics'
   weight: 5
 
 search_api_typesense.collection.synonyms:

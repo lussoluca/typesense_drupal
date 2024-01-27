@@ -13,8 +13,10 @@ use Drupal\search_api\IndexInterface;
 use Drupal\search_api\Plugin\PluginFormTrait;
 use Drupal\search_api\Query\QueryInterface;
 use Drupal\search_api\Utility\DataTypeHelperInterface;
+use Drupal\search_api_typesense\Api\Config;
 use Drupal\search_api_typesense\Api\SearchApiTypesenseException;
-use Drupal\search_api_typesense\Api\SearchApiTypesenseServiceInterface;
+use Drupal\search_api_typesense\Api\TypesenseClient;
+use Drupal\search_api_typesense\Api\TypesenseClientInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -61,6 +63,11 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
   protected array|bool $serverAuth;
 
   /**
+   * @var \Drupal\search_api_typesense\Api\TypesenseClientInterface
+   */
+  private TypesenseClientInterface $typesense;
+
+  /**
    * Constructs a Typesense backend plugin.
    *
    * @param array $configuration
@@ -69,8 +76,6 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
    *   The plugin id.
    * @param mixed $plugin_definition
    *   A plugin definition.
-   * @param \Drupal\search_api_typesense\Api\SearchApiTypesenseServiceInterface $typesense
-   *   The Typesense service.
    * @param \Psr\Log\LoggerInterface $logger
    *   The logger interface.
    * @param \Drupal\search_api\Utility\FieldsHelperInterface $fieldsHelper
@@ -88,7 +93,6 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
     array $configuration,
     $plugin_id,
     $plugin_definition,
-    private readonly SearchApiTypesenseServiceInterface $typesense,
     protected $logger,
     protected $fieldsHelper,
     private readonly DataTypeHelperInterface $dataTypeHelper,
@@ -104,17 +108,14 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
     }
     $this->server = $this->getServer();
     $this->indexes = $this->server->getIndexes();
-    $this->serverAuth = $this->getServerAuth(FALSE);
 
-    // Don't initiate a connection or depend on one if we don't have enough
-    // info to authorize!
-    if (!$this->serverAuth) {
+    $config = $this->getClientConfiguration(FALSE);
+    if ($config == NULL || !$config->valid()) {
       return;
     }
 
-    extract($this->serverAuth);
-    $this->typesense->setAuthorization($api_key, $nodes, $connection_timeout_seconds);
     try {
+      $this->typesense = new TypesenseClient($this->getClientConfiguration(FALSE));
       $this->collections = $this->typesense->retrieveCollections();
       $this->syncIndexesAndCollections();
     }
@@ -122,16 +123,6 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
       $this->logger->error($e->getMessage());
       $this->messenger()->addError($this->t('Unable to retrieve server and/or index information.'));
     }
-
-    // ksm($this->server);
-    // ksm($this->collections);
-    // ksm([
-    //   'search',
-    //    $this->typesense->searchDocuments('sapi_typesense_index', [
-    //      'q' => 'volks',
-    //      'query_by' => 'field_vehicle_make__name,field_vehicle_model__name',
-    //    ]),
-    // ]);.
   }
 
   /**
@@ -142,7 +133,6 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
       $configuration,
       $plugin_id,
       $plugin_definition,
-      $container->get('search_api_typesense.api'),
       $container->get('logger.channel.search_api_typesense'),
       $container->get('search_api.fields_helper'),
       $container->get('search_api.data_type_helper'),
@@ -229,24 +219,24 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
   /**
    * Returns Typesense auth credentials iff ALL needed values are set.
    *
-   * @return array|FALSE
+   * @return \Drupal\search_api_typesense\Api\Config|null
    */
-  protected function getServerAuth($read_only = TRUE): array|false {
+  protected function getClientConfiguration($read_only = TRUE): ?Config {
     $api_key_key = $read_only ? 'ro_api_key' : 'rw_api_key';
 
     $config = $this->configFactory->get('search_api.server.' . $this->server->id())->get('backend_config');
 
-    if (isset($config[$api_key_key], $config['nodes'], $config['connection_timeout_seconds'])) {
-      $auth = [
-        'api_key' => $config[$api_key_key],
-        'nodes' => array_filter($config['nodes'], function ($key) {
+    if (isset($config[$api_key_key], $config['nodes'], $config['retry_interval_seconds'])) {
+      return new Config(
+        api_key: $config[$api_key_key],
+        nodes: array_filter($config['nodes'], function ($key) {
           return is_numeric($key);
         }, ARRAY_FILTER_USE_KEY),
-        'connection_timeout_seconds' => intval($config['connection_timeout_seconds']),
-      ];
+        retry_interval_seconds: intval($config['retry_interval_seconds']),
+      );
     }
 
-    return $auth ?? FALSE;
+    return NULL;
   }
 
   /**
@@ -278,7 +268,7 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
    * the indexing from scratch.
    *
    * We handle all this here instead of in the class's addIndex() method because
-   * the index's fields and Typsense Schema processor must already be configured
+   * the index's fields and Typesense Schema processor must already be configured
    * before the collection can be created in the first place.
    */
   protected function syncIndexesAndCollections(): void {
@@ -307,7 +297,7 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
 
         // If it doesn't, create it.
         if (empty($collection)) {
-          $collection = $this->typesense->createCollection($typesense_schema);
+          $this->typesense->createCollection($typesense_schema);
         }
       }
     }
@@ -440,14 +430,14 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
       ];
     }
 
-    $form['connection_timeout_seconds'] = [
+    $form['retry_interval_seconds'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Connection timeout (seconds)'),
       '#maxlength' => 2,
       '#size' => 10,
       '#required' => TRUE,
       '#description' => $this->t('Time to wait before timing-out the connection attempt.'),
-      '#default_value' => $this->configuration['connection_timeout_seconds'] ?? 2,
+      '#default_value' => $this->configuration['retry_interval_seconds'] ?? 2,
     ];
 
     return $form;
@@ -552,12 +542,8 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
         }
 
         // Create the document.
-        $created = $this->typesense->createDocument($collection_name, $document);
-
-        // If that worked, add to the set of indexed documents.
-        if (is_array($created)) {
-          $indexed_documents[] = $key;
-        }
+        $this->typesense->createDocument($collection_name, $document);
+        $indexed_documents[] = $key;
       }
 
       return $indexed_documents;
@@ -773,11 +759,15 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
    */
   public function isAvailable() {
     try {
-      return (bool) $this->typesense->retrieveDebug()['state'];
+      return (bool) $this->getTypesense()->retrieveDebug()['state'];
     }
     catch (SearchApiTypesenseException $e) {
       return FALSE;
     }
+  }
+
+  public function getTypesense(): TypesenseClientInterface {
+    return $this->typesense;
   }
 
 }

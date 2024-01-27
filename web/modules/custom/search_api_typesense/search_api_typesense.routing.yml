@@ -1,8 +1,8 @@
-search_api_typesense.server.status:
-  path: '/admin/config/search/search-api/server/{search_api_server}/status'
+search_api_typesense.server.metrics:
+  path: '/admin/config/search/search-api/server/{search_api_server}/metrics'
   defaults:
-    _title: 'Typesense server status'
-    _controller: '\Drupal\search_api_typesense\Controller\TypesenseServerController::status'
+    _title: 'Server metrics'
+    _controller: '\Drupal\search_api_typesense\Controller\TypesenseServerController::metrics'
   options:
     parameters:
       search_api_server:
