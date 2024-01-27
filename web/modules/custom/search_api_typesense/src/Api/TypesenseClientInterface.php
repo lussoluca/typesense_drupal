@@ -259,7 +259,7 @@ interface TypesenseClientInterface {
   /**
    * Prepares items for typesense-indexing.
    *
-   * @param string|array|null $value
+   * @param string|int|array|null $value
    *   The incoming entity value from Drupal.
    * @param string $type
    *   The specified data type from the Search API index configuration.
