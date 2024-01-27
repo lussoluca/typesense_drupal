@@ -229,6 +229,8 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
    *
    * @return array
    *   A Typesense schema array or [].
+   *
+   * @throws \Drupal\search_api\SearchApiException
    */
   protected function getSchema($collection_name): array {
     $typesense_schema_processor = $this->indexes[$collection_name]->getProcessor('typesense_schema');
