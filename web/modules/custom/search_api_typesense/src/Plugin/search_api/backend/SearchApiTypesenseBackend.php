@@ -54,9 +54,9 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
   protected array $collections;
 
   /**
-   * @var \Drupal\search_api_typesense\Api\TypesenseClientInterface
+   * @var \Drupal\search_api_typesense\Api\TypesenseClientInterface|null
    */
-  private TypesenseClientInterface $typesense;
+  private ?TypesenseClientInterface $typesense = NULL;
 
   /**
    * Constructs a Typesense backend plugin.
@@ -90,7 +90,7 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
     parent::__construct($configuration, $plugin_id, $plugin_definition);
 
     // Don't try to get indexes from server that is not created yet.
-    if ($this->server != NULL) {
+    if ($this->server == NULL) {
       return;
     }
     $this->server = $this->getServer();
@@ -687,7 +687,7 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
    */
   public function isAvailable(): bool {
     try {
-      return (bool) $this->getTypesense()->retrieveDebug()['state'];
+      return (bool) $this->getTypesense()?->retrieveDebug()['state'];
     }
     catch (SearchApiTypesenseException $e) {
       return FALSE;
@@ -697,7 +697,7 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
   /**
    * Return the Typesense client.
    */
-  public function getTypesense(): TypesenseClientInterface {
+  public function getTypesense(): ?TypesenseClientInterface {
     return $this->typesense;
   }
 

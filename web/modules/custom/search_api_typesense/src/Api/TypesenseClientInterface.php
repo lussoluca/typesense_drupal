@@ -269,6 +269,6 @@ interface TypesenseClientInterface {
    *
    * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
    */
-  public function prepareItemValue(string|array|null $value, string $type): bool|float|int|string;
+  public function prepareItemValue(string|int|array|null $value, string $type): bool|float|int|string;
 
 }

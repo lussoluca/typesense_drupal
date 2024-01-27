@@ -318,7 +318,7 @@ class TypesenseClient implements TypesenseClientInterface {
    *     declared type.
    *   - Equip this function to handle multiples (i.e. int32[] etc).
    */
-  public function prepareItemValue(string|array|null $value, string $type): bool|float|int|string {
+  public function prepareItemValue(string|int|array|null $value, string $type): bool|float|int|string {
     if (is_array($value) && count($value) <= 1) {
       $value = reset($value);
     }
