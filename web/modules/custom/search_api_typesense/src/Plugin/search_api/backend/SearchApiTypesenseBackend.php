@@ -275,7 +275,7 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
         //
         // Typesense has made the default_sorting_field setting optional, in
         // v0.20.0, so all we can really do is check for fields.
-        if (count($typesense_schema['fields']) == 0) {
+        if (!array_key_exists('fields', $typesense_schema)) {
           return;
         }
 
