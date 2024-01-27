@@ -4,6 +4,12 @@ search_api_typesense.server.metrics:
   title: 'Server metrics'
   weight: 5
 
+search_api_typesense.server.api_keys:
+  route_name: search_api_typesense.server.api_keys
+  base_route: entity.search_api_server.canonical
+  title: 'API keys'
+  weight: 6
+
 search_api_typesense.collection.synonyms:
   route_name: search_api_typesense.collection.synonyms
   base_route: entity.search_api_index.canonical
