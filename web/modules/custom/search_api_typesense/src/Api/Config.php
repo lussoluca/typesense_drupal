@@ -10,9 +10,14 @@ namespace Drupal\search_api_typesense\Api;
 class Config {
 
   /**
+   * Config constructor.
+   *
    * @param string $api_key
+   *   The Typesense API key.
    * @param array $nodes
+   *   The Typesense nodes.
    * @param int $retry_interval_seconds
+   *   The Typesense retry interval in seconds.
    */
   public function __construct(
     public readonly string $api_key,
@@ -21,7 +26,10 @@ class Config {
   ) {}
 
   /**
+   * Returns the config as an array.
+   *
    * @return array
+   *   The config as an array.
    */
   public function toArray(): array {
     return [
@@ -32,7 +40,10 @@ class Config {
   }
 
   /**
+   * Checks if the config is valid.
+   *
    * @return bool
+   *   TRUE if the config is valid, FALSE otherwise.
    */
   public function valid(): bool {
     return $this->api_key !== ''

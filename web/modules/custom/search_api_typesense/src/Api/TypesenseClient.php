@@ -9,23 +9,29 @@ use Typesense\Client;
 use Typesense\Collection;
 
 /**
- *
+ * The Search Api Typesense client.
  */
 class TypesenseClient implements TypesenseClientInterface {
 
   private Client $client;
 
   /**
+   * TypesenseClient constructor.
+   *
    * @param \Drupal\search_api_typesense\api\Config $config
+   *   The Typesense config.
+   *
+   * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
+   * @throws \Http\Client\Exception
    */
   public function __construct(Config $config) {
-      try {
-        $this->client = new Client($config->toArray());
-        $this->client->health->retrieve();
-      }
-      catch (\Exception $e) {
-        throw new SearchApiTypesenseException($e->getMessage(), $e->getCode(), $e);
-      }
+    try {
+      $this->client = new Client($config->toArray());
+      $this->client->health->retrieve();
+    }
+    catch (\Exception $e) {
+      throw new SearchApiTypesenseException($e->getMessage(), $e->getCode(), $e);
+    }
   }
 
   /**
@@ -310,7 +316,7 @@ class TypesenseClient implements TypesenseClientInterface {
    *     declared type.
    *   - Equip this function to handle multiples (i.e. int32[] etc).
    */
-  public function prepareItemValue($value, $type) {
+  public function prepareItemValue($value, $type): array {
     if (is_array($value) && count($value <= 1)) {
       $value = reset($value);
     }

@@ -21,7 +21,7 @@ class BoolDataType extends DataTypePluginBase {
   /**
    * {@inheritdoc}
    */
-  public function getValue($value) {
+  public function getValue($value): bool {
     return (boolean) $value;
   }
 

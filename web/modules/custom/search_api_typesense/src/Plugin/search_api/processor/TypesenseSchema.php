@@ -155,21 +155,6 @@ class TypesenseSchema extends FieldsProcessorPluginBase {
       ];
     }
 
-    // $form['generated_schema'] = [
-    //   '#type' => 'details',
-    //   '#title' => $this->t('Generated Typesense schema'),
-    //   '#description' => $this->t('When this form was last saved, the Typesense schema was configured as shown here. <strong>Note</strong>: this field is only used for reference'),
-    //   '#open' => FALSE,
-    // ];
-    // // We're going to need to build the Typesense schema elsewhere in order to
-    // // display it here.
-    // $form['generated_schema']['code'] = [
-    //   '#type' => 'inline_template',
-    //   '#template' => '<pre><code>{{ schema }}</code></pre>',
-    //   '#context' => [
-    //     'schema' => var_export($this->getTypesenseSchema(), TRUE),
-    //   ],
-    // ];
     return $form;
   }
 
@@ -182,7 +167,8 @@ class TypesenseSchema extends FieldsProcessorPluginBase {
    * The returned value is suitable for use in #select form api objects'
    * #options arrays.
    *
-   * @return array $sorting_field_options
+   * @return array
+   *   An array of field ids and names for all numeric fields in this index.
    */
   public function getSortingFieldOptions(): array {
     $sorting_field_options = [];
@@ -204,13 +190,13 @@ class TypesenseSchema extends FieldsProcessorPluginBase {
   /**
    * Gets the native Typesense datatype from the module value.
    *
-   * @param $search_api_typesense_datatype
+   * @param string $search_api_typesense_datatype
    *   The search_api_typesense datatype.
    *
-   * @return $typesense_datatype
+   * @return string
    *   The Typesense datatype.
    */
-  public function getTypesenseDatatype($search_api_typesense_datatype) {
+  public function getTypesenseDatatype(string $search_api_typesense_datatype): string {
     return str_replace('typesense_', '', $search_api_typesense_datatype);
   }
 

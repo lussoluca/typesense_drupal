@@ -21,7 +21,7 @@ class FloatDataType extends DataTypePluginBase {
   /**
    * {@inheritdoc}
    */
-  public function getValue($value) {
+  public function getValue($value): float {
     return (float) $value;
   }
 

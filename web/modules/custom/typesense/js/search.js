@@ -4,7 +4,7 @@
     attach: function (context) {
       const typesenseInstantsearchAdapter = new TypesenseInstantSearchAdapter({
         server: {
-          apiKey: 'xyz',
+          apiKey: 'ddev',
           nodes: [
             {
               host: 'localhost',
@@ -16,7 +16,7 @@
         additionalSearchParameters: {
           // query_by: 'embedding',
           // query_by: 'title,body,embedding',
-          query_by: 'title,body',
+          query_by: 'title,processed',
           exclude_fields: 'embedding',
         },
       });
@@ -24,7 +24,7 @@
 
       const search = instantsearch({
         searchClient,
-        indexName: 'nodes_ml',
+        indexName: 'local',
         routing: true,
         searchFunction(helper) {
           const container = document.querySelector('#results');
@@ -56,23 +56,23 @@
       `,
           },
         }),
-        instantsearch.widgets.refinementList({
-          container: '#category',
-          attribute: 'category',
-          searchable: true,
-          operator: 'and',
-          templates: {
-            item(item, { html }) {
-              const { url, label, count, isRefined } = item;
-
-              return html`
-        <a href="${url}" style="${isRefined ? 'font-weight: bold' : ''}">
-          <span>${label}</span>
-        </a>
-      `;
-            },
-          },
-        }),
+      //   instantsearch.widgets.refinementList({
+      //     container: '#category',
+      //     attribute: 'category',
+      //     searchable: true,
+      //     operator: 'and',
+      //     templates: {
+      //       item(item, { html }) {
+      //         const { url, label, count, isRefined } = item;
+      //
+      //         return html`
+      //   <a href="${url}" style="${isRefined ? 'font-weight: bold' : ''}">
+      //     <span>${label}</span>
+      //   </a>
+      // `;
+      //       },
+      //     },
+      //   }),
         instantsearch.widgets.pagination({
           container: '#pagination',
         }),

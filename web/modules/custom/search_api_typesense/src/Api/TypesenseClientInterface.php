@@ -7,7 +7,7 @@ namespace Drupal\search_api_typesense\Api;
 use Typesense\Collection;
 
 /**
- *
+ * Interface for the Search Api Typesense client.
  */
 interface TypesenseClientInterface {
 
@@ -32,13 +32,14 @@ interface TypesenseClientInterface {
    * Gets a Typesense collection.
    *
    * @param string $collection_name
+   *   The name of the collection to retrieve.
    *
-   * @return Typesense\Collection|null
+   * @return \Typesense\Collection|null
    *   The collection, or NULL if none was found.
    *
    * @see https://typesense.org/docs/0.19.0/api/collections.html#retrieve-a-collection
    *
-   * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseExceptiono
+   * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
    */
   public function retrieveCollection(string $collection_name): ?Collection;
 
@@ -83,6 +84,8 @@ interface TypesenseClientInterface {
    *
    * @param string $collection_name
    *   The collection to create the new document on.
+   * @param array $document
+   *   The document to create.
    *
    * @see https://typesense.org/docs/0.19.0/api/documents.html#index-a-document
    * @see https://typesense.org/docs/0.19.0/api/documents.html#upsert
@@ -149,6 +152,8 @@ interface TypesenseClientInterface {
    *   The collection to create the new synonym on.
    * @param string $id
    *   The id of the synonym to create.
+   * @param array $synonym
+   *   The synonym to create.
    *
    * @return array
    *   The newly added/updated synonym.
@@ -263,6 +268,6 @@ interface TypesenseClientInterface {
    *
    * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
    */
-  public function prepareItemValue($value, $type);
+  public function prepareItemValue($value, $type): array;
 
 }

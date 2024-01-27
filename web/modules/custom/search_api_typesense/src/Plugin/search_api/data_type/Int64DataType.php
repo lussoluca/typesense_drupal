@@ -19,9 +19,9 @@ use Drupal\search_api\DataType\DataTypePluginBase;
 class Int64DataType extends DataTypePluginBase {
 
   /**
-   * {@inheritdoc.
+   * {@inheritdoc}
    */
-  public function getValue($value) {
+  public function getValue($value): int {
     return (int) $value;
   }
 

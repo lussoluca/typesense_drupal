@@ -21,7 +21,7 @@ class Int32DataType extends DataTypePluginBase {
   /**
    * {@inheritdoc}
    */
-  public function getValue($value) {
+  public function getValue($value): int {
     return (int) $value & 0xFFFFFFFF;
   }
 

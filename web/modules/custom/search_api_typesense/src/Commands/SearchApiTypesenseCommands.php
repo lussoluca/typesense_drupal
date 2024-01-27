@@ -8,7 +8,7 @@ use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\search_api\Utility\CommandHelper;
-use Drupal\search_api_typesense\Api\SearchApiTypesenseServiceInterface;
+use Drupal\search_api_typesense\Api\TypesenseClientInterface;
 use Drush\Commands\DrushCommands;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Output\BufferedOutput;
@@ -68,28 +68,28 @@ class SearchApiTypesenseCommands extends DrushCommands {
   /**
    * The Typesense service.
    *
-   * @var \Drupal\search_api_typesense\Api\SearchApiTypesenseServiceInterface
+   * @var \Drupal\search_api_typesense\Api\TypesenseClientInterface
    */
-  protected $typesense;
+  protected TypesenseClientInterface $typesense;
 
   /**
    * The config factory.
    *
    * @var \Drupal\Core\Config\ConfigFactoryInterface
    */
-  protected $configFactory;
+  protected ConfigFactoryInterface $configFactory;
 
   /**
    * The command helper.
    *
    * @var \Drupal\search_api\Utility\CommandHelper
    */
-  protected $commandHelper;
+  protected CommandHelper $commandHelper;
 
   /**
    * Class constructor.
    *
-   * @param \Drupal\search_api_typesense\Api\SearchApiTypesenseServiceInterface $typesenseService
+   * @param \Drupal\search_api_typesense\Api\TypesenseClientInterface $typesense
    *   The Typesense service.
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The config factory.
@@ -98,11 +98,16 @@ class SearchApiTypesenseCommands extends DrushCommands {
    * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
    *   The module handler.
    * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $event_dispatcher
+   *   The event dispatcher.
+   *
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
-  public function __construct(SearchApiTypesenseServiceInterface $typesense, ConfigFactoryInterface $config_factory, EntityTypeManagerInterface $entity_type_manager, ModuleHandlerInterface $module_handler, EventDispatcherInterface $event_dispatcher) {
+  public function __construct(TypesenseClientInterface $typesense, ConfigFactoryInterface $config_factory, EntityTypeManagerInterface $entity_type_manager, ModuleHandlerInterface $module_handler, EventDispatcherInterface $event_dispatcher) {
     parent::__construct();
 
     $this->typesense = $typesense;
+    $this->configFactory = $config_factory;
     $this->entityTypeManager = $entity_type_manager;
     $this->commandHelper = new CommandHelper($entity_type_manager, $module_handler, $event_dispatcher, 'dt');
   }
@@ -120,14 +125,19 @@ class SearchApiTypesenseCommands extends DrushCommands {
    * @param string $collection_name
    *   The name of the collection that we want to query/manipulate.
    * @param bool $read_only
-   *   Whether or not this is a read-only operation.
+   *   Whether this is a read-only operation.
+   *
+   * @return bool
+   *   FALSE if we can't connect to the server, void otherwise.
+   *
+   * @throws \Drupal\search_api\SearchApiException
    *
    * @todo
    *   Consider rewriting the whole Typesense service subsystem so that we can
    *   rely on the same code here as is used in the Backend instead of largely
    *   reproducing the backend code here, in this method.
    */
-  protected function getTypesenseConnection($collection_name, $read_only = TRUE) {
+  protected function getTypesenseConnection($collection_name, $read_only = TRUE): bool {
     // Get the set of available indexes.
     $indexes = $this->commandHelper->loadIndexes([$collection_name]);
 
@@ -161,6 +171,8 @@ class SearchApiTypesenseCommands extends DrushCommands {
     // extract($server_auth);
     // Connect to the server--there's no point going any further if we can't.
     $this->typesense->setAuthorization($api_key, $nodes, $connection_timeout_seconds);
+
+    return TRUE;
   }
 
   /**
@@ -177,14 +189,14 @@ class SearchApiTypesenseCommands extends DrushCommands {
    *   $client->collections['companies']->documents->search($searchParameters)
    * @endcode
    *
-   * @param $collection_name
+   * @param string $collection_name
    *   The specific Typesense collection to query.
-   * @param $q
+   * @param string $q
    *   The query text to search for in the collection.
    *
    *   Use * as the search string to return all documents. This is typically
    *   useful when used in conjunction with filter_by.
-   * @param $query_by
+   * @param string $query_by
    *   One or more string / string[] fields that should be queried against.
    *   Separate multiple fields with a comma: company_name, country.
    * @param array $options
