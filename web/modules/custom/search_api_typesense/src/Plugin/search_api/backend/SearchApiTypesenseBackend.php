@@ -6,13 +6,11 @@ namespace Drupal\search_api_typesense\Plugin\search_api\backend;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Plugin\PluginFormInterface;
 use Drupal\search_api\Backend\BackendPluginBase;
 use Drupal\search_api\IndexInterface;
 use Drupal\search_api\Plugin\PluginFormTrait;
 use Drupal\search_api\Query\QueryInterface;
-use Drupal\search_api\Utility\DataTypeHelperInterface;
 use Drupal\search_api_typesense\Api\Config;
 use Drupal\search_api_typesense\Api\SearchApiTypesenseException;
 use Drupal\search_api_typesense\Api\TypesenseClient;
@@ -37,7 +35,7 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
   /**
    * The server corresponding to this backend.
    *
-   * @var \Drupal\search_api\Entity\Server
+   * @var \Drupal\search_api\ServerInterface
    */
   protected $server;
 
@@ -69,34 +67,30 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
    *   The plugin id.
    * @param mixed $plugin_definition
    *   A plugin definition.
-   * @param \Psr\Log\LoggerInterface $logger
+   * @param \Psr\Log\LoggerInterface|null $logger
    *   The logger interface.
-   * @param \Drupal\search_api\Utility\FieldsHelperInterface $fieldsHelper
+   * @param \Drupal\search_api\Utility\FieldsHelper|null $fieldsHelper
    *   The fields helper.
-   * @param \Drupal\search_api\Utility\DataTypeHelperInterface $dataTypeHelper
-   *   The data type helper.
-   * @param \Drupal\Core\Language\LanguageManager $languageManager
-   *   The Language manager.
    * @param \Drupal\Core\Config\ConfigFactoryInterface $configFactory
    *   The config factory.
-   * @param \Drupal\Core\Messenger\Messenger $messenger
+   * @param \Drupal\Core\Messenger\MessengerInterface|null $messenger
    *   The messenger.
+   *
+   * @throws \Http\Client\Exception
    */
-  public function __construct(
+  final public function __construct(
     array $configuration,
     $plugin_id,
     $plugin_definition,
     protected $logger,
     protected $fieldsHelper,
-    private readonly DataTypeHelperInterface $dataTypeHelper,
-    private readonly LanguageManagerInterface $languageManager,
     private readonly ConfigFactoryInterface $configFactory,
     protected $messenger
   ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
 
     // Don't try to get indexes from server that is not created yet.
-    if (!$this->server) {
+    if ($this->server != NULL) {
       return;
     }
     $this->server = $this->getServer();
@@ -128,8 +122,6 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
       $plugin_definition,
       $container->get('logger.channel.search_api_typesense'),
       $container->get('search_api.fields_helper'),
-      $container->get('search_api.data_type_helper'),
-      $container->get('language_manager'),
       $container->get('config.factory'),
       $container->get('messenger'),
     );
@@ -140,7 +132,7 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
    *
    * @todo: include only collections that have a corresponding Search API index.
    */
-  public function viewSettings() {
+  public function viewSettings(): array {
     $info = [];
 
     try {
@@ -171,7 +163,7 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
           'info' => NULL,
         ];
 
-        if (!empty($collection)) {
+        if ($collection != NULL) {
           $collection_created['info'] = date(DATE_ISO8601, $collection->retrieve()['created_at']);
           $collection_documents['info'] = $collection->retrieve()['num_documents'] > '0'
             ? number_format($collection->retrieve()['num_documents'])
@@ -207,6 +199,8 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
       $this->logger->error($e->getMessage());
       $this->messenger()->addError($this->t('Unable to retrieve server and/or index information.'));
     }
+
+    return [];
   }
 
   /**
@@ -265,7 +259,7 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
   protected function syncIndexesAndCollections(): void {
     try {
       // If there are no indexes, we have nothing to do.
-      if (empty($this->indexes)) {
+      if (count($this->indexes) == 0) {
         return;
       }
 
@@ -279,7 +273,7 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
         //
         // Typesense has made the default_sorting_field setting optional, in
         // v0.20.0, so all we can really do is check for fields.
-        if (empty($typesense_schema['fields'])) {
+        if (count($typesense_schema['fields']) > 0) {
           return;
         }
 
@@ -287,7 +281,7 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
         $collection = $this->typesense->retrieveCollection($typesense_schema['name']);
 
         // If it doesn't, create it.
-        if (empty($collection)) {
+        if ($collection != NULL) {
           $this->typesense->createCollection($typesense_schema);
         }
       }
@@ -497,7 +491,7 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
    * @todo
    *   - Add created/updated column(s) to index.
    */
-  public function indexItems(IndexInterface $index, array $items) {
+  public function indexItems(IndexInterface $index, array $items): array {
     try {
       $collection_name = $index->getProcessor('typesense_schema')->getConfiguration()['schema']['name'];
       $indexed_documents = [];
@@ -520,7 +514,7 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
           //
           // In either case, we rely on the Typesense service to enfore the
           // datatype.
-          if (empty($field_values)) {
+          if (count($field_values) == 0) {
             $value = $this->typesense->prepareItemValue(NULL, $field_type);
           }
           else {
@@ -543,6 +537,8 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
       $this->logger->error($e->getMessage());
       $this->messenger()->addError($this->t('Unable to index items.'));
     }
+
+    return [];
   }
 
   /**
@@ -623,11 +619,11 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
     $old_fields = $original->getFields();
     $new_fields = $index->getFields();
 
-    if (!$old_fields && !$new_fields) {
+    if (count($old_fields) == 0 && count($new_fields) == 0) {
       return FALSE;
     }
 
-    if (array_diff_key($old_fields, $new_fields) || array_diff_key($new_fields, $old_fields)) {
+    if (count(array_diff_key($old_fields, $new_fields)) == 0 || count(array_diff_key($new_fields, $old_fields)) == 0) {
       return TRUE;
     }
 
@@ -669,14 +665,7 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
    * {@inheritdoc}
    */
   public function search(QueryInterface $query): void {
-    try {
-      // Will use $this->typesense->searchDocuments();
-      return;
-    }
-    catch (SearchApiTypesenseException $e) {
-      $this->logger->error($e->getMessage());
-      $this->messenger()->addError($this->t('Unable to perform search on Typesense collection.'));
-    }
+    // Will use $this->typesense->searchDocuments();
   }
 
   /**

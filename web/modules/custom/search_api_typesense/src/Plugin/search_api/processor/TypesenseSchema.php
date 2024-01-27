@@ -39,7 +39,7 @@ class TypesenseSchema extends FieldsProcessorPluginBase {
    *   The data type helper.
    */
   public function getDataTypeHelper(): DataTypeHelperInterface {
-    return $this->dataTypeHelper ?: \Drupal::service('search_api.data_type_helper');
+    return $this->dataTypeHelper;
   }
 
   /**
@@ -50,15 +50,16 @@ class TypesenseSchema extends FieldsProcessorPluginBase {
    *
    * @return $this
    */
-  public function setDataTypeHelper(DataTypeHelperInterface $data_type_helper) {
+  public function setDataTypeHelper(DataTypeHelperInterface $data_type_helper): self {
     $this->dataTypeHelper = $data_type_helper;
+
     return $this;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function defaultConfiguration() {
+  public function defaultConfiguration(): array {
     $configuration = parent::defaultConfiguration();
 
     $configuration += [];
@@ -69,7 +70,7 @@ class TypesenseSchema extends FieldsProcessorPluginBase {
   /**
    * {@inheritdoc}
    */
-  public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
+  public function buildConfigurationForm(array $form, FormStateInterface $form_state): array {
     $index = $this->getIndex();
 
     $form['warning'] = [
@@ -147,7 +148,7 @@ class TypesenseSchema extends FieldsProcessorPluginBase {
         '#type' => 'textfield',
         '#title' => $this->t('Datatype'),
         '#description' => $this->t('The Typesense data type of the indexed field. This field is read-only.'),
-        '#default_value' => $this->getTypesenseDatatype($field_type) ?? NULL,
+        '#default_value' => $this->getTypesenseDatatype($field_type),
         '#attributes' => [
           'readonly' => 'readonly',
         ],
@@ -175,7 +176,7 @@ class TypesenseSchema extends FieldsProcessorPluginBase {
 
     foreach ($this->getIndex()->getFields() as $field) {
       $field_type = $field->getType();
-      if (!empty(preg_match('/^typesense_(float|int32)/', $field_type))) {
+      if (preg_match('/^typesense_(float|int32)/', $field_type)) {
         $sorting_field_options[$field->getFieldIdentifier()] = sprintf(
           '%s (%s)',
           $field->getLabel(),
@@ -219,7 +220,7 @@ class TypesenseSchema extends FieldsProcessorPluginBase {
 
     // Typesense' default_sorting_field value is now optional. Don't add i
     // unless we have a value for it.
-    if (isset($this->configuration['schema']['default_sorting_field']) && !empty($this->configuration['schema']['default_sorting_field'])) {
+    if (isset($this->configuration['schema']['default_sorting_field']) && $this->configuration['schema']['default_sorting_field'] !== '') {
       $typesense_schema['default_sorting_field'] = $this->configuration['schema']['default_sorting_field'];
     }
 
@@ -232,12 +233,12 @@ class TypesenseSchema extends FieldsProcessorPluginBase {
       ];
 
       // The field might be a facet.
-      if (!empty($field['facet'])) {
+      if ($field['facet'] === TRUE) {
         $field_properties['facet'] = TRUE;
       }
 
       // The field might be optional.
-      if (!empty($field['optional'])) {
+      if ($field['optional'] === TRUE) {
         $field_properties['optional'] = TRUE;
       }
 

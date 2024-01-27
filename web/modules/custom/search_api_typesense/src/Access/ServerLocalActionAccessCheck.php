@@ -30,7 +30,7 @@ class ServerLocalActionAccessCheck implements AccessInterface {
    * @throws \Drupal\search_api\SearchApiException
    */
   public function access(AccountInterface $account, ServerInterface $search_api_server = NULL): AccessResultInterface {
-    if ($search_api_server && $search_api_server->getBackend() instanceof SearchApiTypesenseBackend) {
+    if ($search_api_server != NULL && $search_api_server->getBackend() instanceof SearchApiTypesenseBackend) {
       return AccessResult::allowed();
     }
 

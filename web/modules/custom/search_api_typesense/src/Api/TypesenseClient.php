@@ -4,21 +4,25 @@ declare(strict_types = 1);
 
 namespace Drupal\search_api_typesense\Api;
 
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Http\Client\Exception;
 use Typesense\Client;
 use Typesense\Collection;
+use Typesense\Keys;
 
 /**
  * The Search Api Typesense client.
  */
 class TypesenseClient implements TypesenseClientInterface {
 
+  use StringTranslationTrait;
+
   private Client $client;
 
   /**
    * TypesenseClient constructor.
    *
-   * @param \Drupal\search_api_typesense\api\Config $config
+   * @param \Drupal\search_api_typesense\Api\Config $config
    *   The Typesense config.
    *
    * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
@@ -39,13 +43,13 @@ class TypesenseClient implements TypesenseClientInterface {
    */
   public function searchDocuments(string $collection_name, array $parameters): array {
     try {
-      if (empty($collection_name) || empty($parameters)) {
+      if ($collection_name != '' || $parameters != '') {
         return [];
       }
 
       $collection = $this->retrieveCollection($collection_name);
 
-      if ($collection) {
+      if ($collection != NULL) {
         return $this->client->collections[$collection_name]->documents->search($parameters);
       }
 
@@ -120,7 +124,7 @@ class TypesenseClient implements TypesenseClientInterface {
     try {
       $collection = $this->retrieveCollection($collection_name);
 
-      if ($collection) {
+      if ($collection != NULL) {
         $this->client->collections[$collection_name]->documents->upsert($document);
       }
 
@@ -138,11 +142,11 @@ class TypesenseClient implements TypesenseClientInterface {
     try {
       $collection = $this->retrieveCollection($collection_name);
 
-      if ($collection) {
+      if ($collection != NULL) {
         return $collection->documents[$id]->retrieve();
       }
 
-      return FALSE;
+      return [];
     }
     catch (\Exception $e) {
       throw new SearchApiTypesenseException($e->getMessage(), $e->getCode(), $e);
@@ -156,11 +160,11 @@ class TypesenseClient implements TypesenseClientInterface {
     try {
       $collection = $this->retrieveCollection($collection_name);
 
-      if ($collection) {
+      if ($collection != NULL) {
         return $collection->documents[$id]->delete();
       }
 
-      return FALSE;
+      return [];
     }
     catch (\Exception $e) {
       throw new SearchApiTypesenseException($e->getMessage(), $e->getCode(), $e);
@@ -174,11 +178,11 @@ class TypesenseClient implements TypesenseClientInterface {
     try {
       $collection = $this->retrieveCollection($collection_name);
 
-      if ($collection && $collection->documents && !empty($filter_condition)) {
+      if ($collection != NULL && count($filter_condition) > 0) {
         return $collection->documents->delete($filter_condition);
       }
 
-      return FALSE;
+      return [];
     }
     catch (\Exception $e) {
       throw new SearchApiTypesenseException($e->getMessage(), $e->getCode(), $e);
@@ -192,13 +196,11 @@ class TypesenseClient implements TypesenseClientInterface {
     try {
       $collection = $this->retrieveCollection($collection_name);
 
-      if ($collection) {
-        $created_synonym = $this->client->collections[$collection_name]->synonyms->upsert($id, $synonym);
-
-        return $created_synonym;
+      if ($collection != NULL) {
+        return $this->client->collections[$collection_name]->synonyms->upsert($id, $synonym);
       }
 
-      return FALSE;
+      return [];
     }
     catch (\Exception $e) {
       throw new SearchApiTypesenseException($e->getMessage(), $e->getCode(), $e);
@@ -212,11 +214,11 @@ class TypesenseClient implements TypesenseClientInterface {
     try {
       $collection = $this->retrieveCollection($collection_name);
 
-      if ($collection) {
+      if ($collection != NULL) {
         return $collection->synonyms[$id]->retrieve();
       }
 
-      return FALSE;
+      return [];
     }
     catch (\Exception $e) {
       throw new SearchApiTypesenseException($e->getMessage(), $e->getCode(), $e);
@@ -230,11 +232,11 @@ class TypesenseClient implements TypesenseClientInterface {
     try {
       $collection = $this->retrieveCollection($collection_name);
 
-      if ($collection) {
+      if ($collection != NULL) {
         return $collection->synonyms->retrieve();
       }
 
-      return FALSE;
+      return [];
     }
     catch (\Exception $e) {
       throw new SearchApiTypesenseException($e->getMessage(), $e->getCode(), $e);
@@ -248,11 +250,11 @@ class TypesenseClient implements TypesenseClientInterface {
     try {
       $collection = $this->retrieveCollection($collection_name);
 
-      if ($collection) {
+      if ($collection != NULL) {
         return $collection->synonyms[$id]->delete();
       }
 
-      return FALSE;
+      return [];
     }
     catch (\Exception $e) {
       throw new SearchApiTypesenseException($e->getMessage(), $e->getCode(), $e);
@@ -298,7 +300,7 @@ class TypesenseClient implements TypesenseClientInterface {
   /**
    * {@inheritdoc}
    */
-  public function getKeys(): array {
+  public function getKeys(): Keys {
     try {
       return $this->client->getKeys();
     }
@@ -316,8 +318,8 @@ class TypesenseClient implements TypesenseClientInterface {
    *     declared type.
    *   - Equip this function to handle multiples (i.e. int32[] etc).
    */
-  public function prepareItemValue($value, $type): array {
-    if (is_array($value) && count($value <= 1)) {
+  public function prepareItemValue(string|array|null $value, string $type): bool|float|int|string {
+    if (is_array($value) && count($value) <= 1) {
       $value = reset($value);
     }
 

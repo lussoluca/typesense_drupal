@@ -30,7 +30,7 @@ class IndexLocalActionAccessCheck implements AccessInterface {
    * @throws \Drupal\search_api\SearchApiException
    */
   public function access(AccountInterface $account, IndexInterface $search_api_index = NULL): AccessResultInterface {
-    if ($search_api_index && $search_api_index->getServerInstance()->getBackend() instanceof SearchApiTypesenseBackend) {
+    if ($search_api_index != NULL && $search_api_index->getServerInstance()->getBackend() instanceof SearchApiTypesenseBackend) {
       return AccessResult::allowed();
     }
 

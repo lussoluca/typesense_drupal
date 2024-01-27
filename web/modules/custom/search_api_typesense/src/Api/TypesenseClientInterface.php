@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace Drupal\search_api_typesense\Api;
 
 use Typesense\Collection;
+use Typesense\Keys;
 
 /**
  * Interface for the Search Api Typesense client.
@@ -248,26 +249,26 @@ interface TypesenseClientInterface {
   /**
    * Returns current server keys.
    *
-   * @return array
+   * @return \Typesense\Keys
    *   The array of the server's keys.
    *
    * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
    */
-  public function getKeys(): array;
+  public function getKeys(): Keys;
 
   /**
    * Prepares items for typesense-indexing.
    *
-   * @param string $value
+   * @param string|array|null $value
    *   The incoming entity value from Drupal.
    * @param string $type
    *   The specified data type from the Search API index configuration.
    *
-   * @return array
+   * @return bool|float|int|string
    *   The prepared item, ready for Typesense indexing.
    *
    * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
    */
-  public function prepareItemValue($value, $type): array;
+  public function prepareItemValue(string|array|null $value, string $type): bool|float|int|string;
 
 }
