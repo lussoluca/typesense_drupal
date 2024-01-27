@@ -233,14 +233,10 @@ class TypesenseSchema extends FieldsProcessorPluginBase {
       ];
 
       // The field might be a facet.
-      if ($field['facet'] === TRUE) {
-        $field_properties['facet'] = TRUE;
-      }
+      $field_properties['facet'] = $field['facet'] === 1;
 
       // The field might be optional.
-      if ($field['optional'] === TRUE) {
-        $field_properties['optional'] = TRUE;
-      }
+      $field_properties['optional'] = $field['optional'] === 1;
 
       // Add the completed field to the list.
       $typesense_schema['fields'][] = $field_properties;
