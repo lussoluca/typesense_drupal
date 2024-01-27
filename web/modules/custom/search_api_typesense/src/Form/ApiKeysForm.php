@@ -6,13 +6,18 @@ namespace Drupal\search_api_typesense\Form;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Link;
+use Drupal\Core\Url;
 use Drupal\search_api\ServerInterface;
+use Drupal\search_api_typesense\Api\TypesenseClientInterface;
 use Drupal\search_api_typesense\Plugin\search_api\backend\SearchApiTypesenseBackend;
 
 /**
  * Provides a Search API Typesense form.
  */
-final class ApiKeysForm extends FormBase {
+class ApiKeysForm extends FormBase {
+
+  protected TypesenseClientInterface $typesenseClient;
 
   /**
    * {@inheritdoc}
@@ -32,29 +37,65 @@ final class ApiKeysForm extends FormBase {
       throw new \InvalidArgumentException('The server must use the Typesense backend.');
     }
 
+    if (!$backend->isAvailable()) {
+      $this->messenger()->addError(
+        $this->t('The Typesense server is not available.')
+      );
+
+      return $form;
+    }
+
+    $this->typesenseClient = $backend->getTypesense();
+
+    $documentation_link = Link::fromTextAndUrl(
+      $this->t('documentation'),
+      Url::fromUri(
+        'https://typesense.org/docs/0.21.0/api/api-keys.html#create-an-api-key', [
+          'attributes' => [
+            'target' => '_blank',
+          ],
+        ]
+      )
+    );
+
     $form['key'] = array(
       '#type' => 'details',
       '#title' => $this->t('Create API Key'),
-      '#description' => $this->t('Documentation @url.', [
-        '@url' => 'https://typesense.org/docs/0.21.0/api/api-keys.html#create-an-api-key',
+      '#description' => $this->t('See the @link for more information.', [
+        '@link' => $documentation_link->toString(),
       ]),
       '#open' => TRUE,
     );
     $form['key']['description'] = array(
       '#type' => 'textfield',
       '#title' => $this->t('Description'),
+      '#description' => $this->t('Internal description to identify what the key is for.'),
       '#size' => 30,
       '#required' => TRUE,
+    );
+    $available_actions_link = Link::fromTextAndUrl(
+      $this->t('these tables'),
+      Url::fromUri(
+        'https://typesense.org/docs/0.25.2/api/api-keys.html#sample-actions', [
+          'attributes' => [
+            'target' => '_blank',
+          ],
+        ]
+      )
     );
     $form['key']['actions'] = array(
       '#type' => 'textfield',
       '#title' => $this->t('Actions'),
+      '#description' => $this->t('Comma separated list of allowed actions. See @link for possible values.', [
+        '@link' => $available_actions_link->toString(),
+      ]),
       '#size' => 30,
       '#required' => TRUE,
     );
     $form['key']['collections'] = array(
       '#type' => 'textfield',
       '#title' => $this->t('Collections'),
+      '#description' => $this->t('Comma separated list of collections that this key is scoped to. Supports regex. Eg: <code>coll.*</code> will match all collections that have "coll" in their name.'),
       '#size' => 30,
       '#required' => TRUE,
     );
@@ -67,7 +108,7 @@ final class ApiKeysForm extends FormBase {
       ],
     ];
 
-    $form['existing_keys']['list'] = $this->buildExistingKeysTable($backend);
+    $form['existing_keys']['list'] = $this->buildExistingKeysTable();
 
     return $form;
   }
@@ -90,16 +131,30 @@ final class ApiKeysForm extends FormBase {
 
   /**
    * {@inheritdoc}
+   *
+   * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
    */
   public function submitForm(array &$form, FormStateInterface $form_state): void {
-    $this->messenger()->addStatus($this->t('The message has been sent.'));
-    $form_state->setRedirect('<front>');
+    $key = $this->typesenseClient->createKey([
+      'description' => $form_state->getValue('description'),
+      'actions' => explode(',', $form_state->getValue('actions')),
+      'collections' => explode(',', $form_state->getValue('collections')),
+    ]);
+
+    $this->messenger()->addStatus(
+      $this->t('The new key @description has been generated.', [
+        '@description' => $key['description'],
+      ])
+    );
+    $this->messenger()->addWarning(
+      $this->t('The generated key is only returned during creation. You want to store this key carefully in a secure place.')
+    );
   }
 
   /**
    * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
    */
-  protected function buildExistingKeysTable(SearchApiTypesenseBackend $backend): array {
+  protected function buildExistingKeysTable(): array {
     $table = [
       '#type' => 'table',
       '#caption' => $this->t('Existing API Keys'),
@@ -116,11 +171,10 @@ final class ApiKeysForm extends FormBase {
     ];
 
     $rows = [];
-    $keys = $backend->getTypesense()->getKeys();
+    $keys = $this->typesenseClient->getKeys();
     foreach ($keys as $key => $value) {
       $rows[$key] = $value;
     }
-
     $table['#rows'] = $rows;
 
     return $table;

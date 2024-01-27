@@ -8,6 +8,7 @@ use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Http\Client\Exception;
 use Typesense\Client;
 use Typesense\Collection;
+use Typesense\Key;
 use Typesense\Keys;
 
 /**
@@ -343,6 +344,37 @@ class TypesenseClient implements TypesenseClientInterface {
     }
 
     return $value;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function createKey(array $schema): Key {
+    try {
+      $this->client->keys->create($schema);
+    }
+    catch (\Exception|Exception $e) {
+      throw new SearchApiTypesenseException($e->getMessage(), $e->getCode(), $e);
+    }
+
+    return $this->retrieveKey($schema['description']);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function retrieveKey(string $key_name): ?Key {
+    try {
+      $key = $this->client->keys[$key_name];
+      // Ensure that the key exists on the typesense server by retrieving it.
+      // This throws exception if it is not found.
+      $key->retrieve();
+
+      return $key;
+    }
+    catch (\Exception|Exception $e) {
+      return NULL;
+    }
   }
 
 }

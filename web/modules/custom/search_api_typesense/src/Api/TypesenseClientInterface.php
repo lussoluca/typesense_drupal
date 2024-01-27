@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace Drupal\search_api_typesense\Api;
 
 use Typesense\Collection;
+use Typesense\Key;
 use Typesense\Keys;
 
 /**
@@ -270,5 +271,37 @@ interface TypesenseClientInterface {
    * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
    */
   public function prepareItemValue(string|int|array|null $value, string $type): bool|float|int|string;
+
+  /**
+   * Creates a key.
+   *
+   * @param array $schema
+   *   A typesense schema for API Key.
+   *
+   * @return \Typesense\Key The created key.
+   *   The created key.
+   *
+   * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
+   *
+   * @see https://typesense.org/docs/0.25.2/api/api-keys.html#create-an-api-key
+   *
+   */
+  public function createKey(array $schema): Key;
+
+  /**
+   * Retrieves a key.
+   *
+   * @param string $key_name
+   *   The name of the key to retrieve.
+   *
+   * @return \Typesense\Key|null
+   *   The retrieved key.
+   *
+   * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
+   *
+   * @see https://typesense.org/docs/0.25.2/api/api-keys.html#retrieve-an-api-key
+   *
+   */
+  public function retrieveKey(string $key_name): ?Key;
 
 }
