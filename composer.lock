@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3e19edaf9df11f0e8210cc71392b2065",
+    "content-hash": "3cbbeadfa482dc11deb0732ba2480dc1",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -2329,17 +2329,17 @@
         },
         {
             "name": "drupal/webprofiler",
-            "version": "10.1.4",
+            "version": "10.1.5",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/webprofiler.git",
-                "reference": "10.1.4"
+                "reference": "10.1.5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/webprofiler-10.1.4.zip",
-                "reference": "10.1.4",
-                "shasum": "4c67d06ca914ad4f9685f444365da1342b2d53df"
+                "url": "https://ftp.drupal.org/files/projects/webprofiler-10.1.5.zip",
+                "reference": "10.1.5",
+                "shasum": "cdec033a50f3d4d3d62cdfd65f5b4bd318c19127"
             },
             "require": {
                 "drupal/core": ">=10.1.2",
@@ -2347,7 +2347,7 @@
                 "drupal/tracer": "*",
                 "league/commonmark": "~2.4",
                 "nette/php-generator": "^4.0",
-                "nikic/php-parser": "^5.0 || ^4.0",
+                "nikic/php-parser": "^5.0 || ^4.18",
                 "php": ">=8.1.0",
                 "symfony/stopwatch": "^6",
                 "symfony/var-dumper": "^6"
@@ -2369,8 +2369,8 @@
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "10.1.4",
-                    "datestamp": "1705997363",
+                    "version": "10.1.5",
+                    "datestamp": "1706823464",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
