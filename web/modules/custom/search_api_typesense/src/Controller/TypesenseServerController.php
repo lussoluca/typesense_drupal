@@ -27,7 +27,7 @@ class TypesenseServerController extends ControllerBase {
     }
 
     $metrics = $backend->getTypesense()->retrieveMetrics();
-
+    // dpm($metrics);
     return [
       '#markup' => $this->t('Hello, World!'),
     ];

@@ -3,6 +3,18 @@ services:
     parent: logger.channel_base
     arguments: ['search_api_typesense']
 
+  search_api_typesense.backend:
+    class: Drupal\search_api_typesense\Plugin\search_api\backend\SearchApiTypesenseBackend
+    arguments: 
+      - '@config.factory'
+      - '@logger.channel.search_api_typesense'
+      - '@search_api.fields_helper'
+      - '@search_api.data_type_helper'
+      - '@language_manager'
+      - '@messenger'
+    calls:
+     - [ 'setLogger', [ '@logger.channel.search_api_typesense' ], true ]
+
   search_api_typesense.server.local_action_access_check:
     class: Drupal\search_api_typesense\Access\ServerLocalActionAccessCheck
     arguments: ['@current_user']
