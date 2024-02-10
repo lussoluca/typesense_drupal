@@ -144,20 +144,18 @@ class ApiKeysForm extends FormBase {
    * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
    */
   public function submitForm(array &$form, FormStateInterface $form_state): void {
-    $description = $form_state->getValue('description');
-    $this->typesenseClient->createKey([
-      'description' => $description,
+    $response = $this->typesenseClient->createKey([
+      'description' => $form_state->getValue('description'),
       'actions' => explode(',', $form_state->getValue('actions')),
       'collections' => explode(',', $form_state->getValue('collections')),
     ]);
-
     $this->messenger()->addStatus(
-      $this->t('The new key @description has been generated.', [
-        '@description' => $description,
+      $this->t('The new key <code>@value</code> has been generated.', [
+        '@value' => $response['value'],
       ])
     );
     $this->messenger()->addWarning(
-      $this->t('The generated key is only returned during creation. You want to store this key carefully in a secure place.')
+      $this->t('The generated key is only returned during creation. You need to store this key carefully in a secure place.')
     );
   }
 

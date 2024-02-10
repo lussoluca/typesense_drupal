@@ -278,11 +278,14 @@ interface TypesenseClientInterface {
    * @param array $schema
    *   A typesense schema for API Key.
    *
+   * @return array
+   *   The created key response.
+   *
    * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
    *
    * @see https://typesense.org/docs/0.25.2/api/api-keys.html#create-an-api-key
    */
-  public function createKey(array $schema): void;
+  public function createKey(array $schema): array;
 
   /**
    * Retrieves a key.
