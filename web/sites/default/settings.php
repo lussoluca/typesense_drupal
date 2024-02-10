@@ -867,3 +867,4 @@ if (getenv('IS_DDEV_PROJECT') == 'true' && file_exists(__DIR__ . '/settings.ddev
 # }
 
 $settings['container_yamls'][] = $app_root . '/' . $site_path . '/monolog.services.yml';
+$settings['tracer_plugin'] = 'stopwatch_tracer';

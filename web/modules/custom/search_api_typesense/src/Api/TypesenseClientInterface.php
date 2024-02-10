@@ -299,7 +299,6 @@ interface TypesenseClientInterface {
    * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
    *
    * @see https://typesense.org/docs/0.25.2/api/api-keys.html#retrieve-an-api-key
-   *
    */
   public function retrieveKey(string $key_name): ?Key;
 

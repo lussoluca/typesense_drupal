@@ -1,4 +1,6 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types = 1);
 
 namespace Drupal\search_api_typesense\Form;
 
@@ -11,9 +13,10 @@ use Drupal\search_api_typesense\Api\TypesenseClientInterface;
 use Drupal\search_api_typesense\Plugin\search_api\backend\SearchApiTypesenseBackend;
 
 /**
- * Provides a Search API Typesense form.
+ * Form to delete a key.
  */
 final class KeyDeleteForm extends ConfirmFormBase {
+
   /**
    * The Typesense client.
    *
@@ -41,11 +44,16 @@ final class KeyDeleteForm extends ConfirmFormBase {
 
     if (!$backend->isAvailable()) {
       $this->messenger()->addError(
-        $this->t('The Typesense server is not available.')
+        $this->t('The Typesense server is not available.'),
       );
     }
 
     $this->typesenseClient = $backend->getTypesense();
+
+    $form['server_id'] = [
+      '#type' => 'value',
+      '#value' => $search_api_server->id(),
+    ];
 
     return parent::buildForm($form, $form_state);
   }
@@ -57,7 +65,7 @@ final class KeyDeleteForm extends ConfirmFormBase {
    * @throws \Http\Client\Exception
    * @throws \Typesense\Exceptions\TypesenseClientError
    */
-  public function submitForm(array &$form, FormStateInterface $form_state, ?ServerInterface $search_api_server = NULL, int $key_id = NULL): void {
+  public function submitForm(array &$form, FormStateInterface $form_state): void {
     $key = $this->typesenseClient->retrieveKey($this->getRequest()->get('id'));
     $key_data = $key->retrieve();
     $key->delete();
@@ -67,7 +75,7 @@ final class KeyDeleteForm extends ConfirmFormBase {
     ]));
 
     $form_state->setRedirect('search_api_typesense.server.api_keys', [
-      'search_api_server' => 'typesense',
+      'search_api_server' => $form_state->getValue('server_id'),
     ]);
   }
 
@@ -93,7 +101,7 @@ final class KeyDeleteForm extends ConfirmFormBase {
    */
   public function getCancelUrl(): Url {
     return Url::fromRoute('search_api_typesense.server.api_keys', [
-      'search_api_server' => 'typesense',
+      'search_api_server' => $this->getRequest()->get('search_api_server')->id(),
     ]);
   }
 

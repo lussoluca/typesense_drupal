@@ -128,8 +128,6 @@ class TypesenseClient implements TypesenseClientInterface {
       if ($collection != NULL) {
         $this->client->collections[$collection_name]->documents->upsert($document);
       }
-
-      throw new \Exception($this->t('Error creating document.')->render());
     }
     catch (\Exception $e) {
       throw new SearchApiTypesenseException($e->getMessage(), $e->getCode(), $e);
@@ -353,7 +351,7 @@ class TypesenseClient implements TypesenseClientInterface {
     try {
       return $this->client->keys->create($schema);
     }
-    catch (\Exception|Exception $e) {
+    catch (\Exception | Exception $e) {
       throw new SearchApiTypesenseException($e->getMessage(), $e->getCode(), $e);
     }
   }
@@ -370,7 +368,7 @@ class TypesenseClient implements TypesenseClientInterface {
 
       return $key;
     }
-    catch (\Exception|Exception $e) {
+    catch (\Exception | Exception $e) {
       return NULL;
     }
   }

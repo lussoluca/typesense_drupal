@@ -2,6 +2,12 @@
 
   Drupal.behaviors.search = {
     attach: function (context) {
+
+      const [x] = once('searchbox', '#searchbox', context);
+      if (x !== undefined) {
+        return;
+      }
+
       const typesenseInstantsearchAdapter = new TypesenseInstantSearchAdapter({
         server: {
           apiKey: 'ddev',
@@ -16,7 +22,7 @@
         additionalSearchParameters: {
           // query_by: 'embedding',
           // query_by: 'title,body,embedding',
-          query_by: 'title,processed',
+          query_by: 'title,body',
           exclude_fields: 'embedding',
         },
       });
@@ -56,23 +62,23 @@
       `,
           },
         }),
-      //   instantsearch.widgets.refinementList({
-      //     container: '#category',
-      //     attribute: 'category',
-      //     searchable: true,
-      //     operator: 'and',
-      //     templates: {
-      //       item(item, { html }) {
-      //         const { url, label, count, isRefined } = item;
-      //
-      //         return html`
-      //   <a href="${url}" style="${isRefined ? 'font-weight: bold' : ''}">
-      //     <span>${label}</span>
-      //   </a>
-      // `;
-      //       },
-      //     },
-      //   }),
+        instantsearch.widgets.refinementList({
+          container: '#category',
+          attribute: 'author',
+          searchable: true,
+          operator: 'and',
+          templates: {
+            item(item, { html }) {
+              const { url, label, count, isRefined } = item;
+
+              return html`
+        <a href="${url}" style="${isRefined ? 'font-weight: bold' : ''}">
+          <span>${label}</span>
+        </a>
+      `;
+            },
+          },
+        }),
         instantsearch.widgets.pagination({
           container: '#pagination',
         }),

@@ -1,3 +1,5 @@
+# Metrics
+
 search_api_typesense.server.metrics:
   path: '/admin/config/search/search-api/server/{search_api_server}/metrics'
   defaults:
@@ -11,6 +13,8 @@ search_api_typesense.server.metrics:
   requirements:
     _permission: 'administer search_api'
     _search_api_typesense_server_local_action_access_check: 'TRUE'
+
+# Api keys management
 
 search_api_typesense.server.api_keys:
   path: '/admin/config/search/search-api/server/{search_api_server}/api-keys'
@@ -26,22 +30,8 @@ search_api_typesense.server.api_keys:
     _permission: 'administer search_api'
     _search_api_typesense_server_local_action_access_check: 'TRUE'
 
-search_api_typesense.collection.synonyms:
-  path: '/admin/config/search/search-api/index/{search_api_index}/synonyms'
-  defaults:
-    _title: 'Synonyms'
-    _controller: '\Drupal\search_api_typesense\Controller\TypesenseCollectionController::synonyms'
-  options:
-    parameters:
-      search_api_index:
-        type: entity:search_api_index
-        with_config_overrides: TRUE
-  requirements:
-    _permission: 'administer search_api'
-    _search_api_typesense_index_local_action_access_check: 'TRUE'
-
-search_api_typesense.key.delete:
-  path: '/admin/config/search/search-api/server/{search_api_server}/key/{id}/delete'
+search_api_typesense.server.api_keys.delete:
+  path: '/admin/config/search/search-api/server/{search_api_server}/api-keys/{id}/delete'
   defaults:
     _title: 'Key Delete'
     _form: 'Drupal\search_api_typesense\Form\KeyDeleteForm'

@@ -15,7 +15,7 @@ use Drupal\search_api_typesense\Api\TypesenseClientInterface;
 use Drupal\search_api_typesense\Plugin\search_api\backend\SearchApiTypesenseBackend;
 
 /**
- * Provides a Search API Typesense form.
+ * Manage the API keys.
  */
 class ApiKeysForm extends FormBase {
 
@@ -41,7 +41,11 @@ class ApiKeysForm extends FormBase {
    * @throws \Http\Client\Exception
    * @throws \Typesense\Exceptions\TypesenseClientError
    */
-  public function buildForm(array $form, FormStateInterface $form_state, ?ServerInterface $search_api_server = NULL): array {
+  public function buildForm(
+    array $form,
+    FormStateInterface $form_state,
+    ?ServerInterface $search_api_server = NULL,
+  ): array {
     $backend = $search_api_server->getBackend();
     if (!$backend instanceof SearchApiTypesenseBackend) {
       throw new \InvalidArgumentException('The server must use the Typesense backend.');
@@ -49,7 +53,7 @@ class ApiKeysForm extends FormBase {
 
     if (!$backend->isAvailable()) {
       $this->messenger()->addError(
-        $this->t('The Typesense server is not available.')
+        $this->t('The Typesense server is not available.'),
       );
 
       return $form;
@@ -59,55 +63,49 @@ class ApiKeysForm extends FormBase {
     $documentation_link = Link::fromTextAndUrl(
       $this->t('documentation'),
       Url::fromUri(
-        'https://typesense.org/docs/0.21.0/api/api-keys.html#create-an-api-key', [
+        'https://typesense.org/docs/0.21.0/api/api-keys.html#create-an-api-key',
+        [
           'attributes' => [
             'target' => '_blank',
           ],
-        ]
-      )
+        ],
+      ),
     );
 
-    $form['key'] = array(
+    $keys = $this->typesenseClient->getKeys()->retrieve();
+    $form['key'] = [
       '#type' => 'details',
       '#title' => $this->t('Create API Key'),
       '#description' => $this->t('See the @link for more information.', [
         '@link' => $documentation_link->toString(),
       ]),
-      '#open' => TRUE,
-    );
-    $form['key']['description'] = array(
+      '#open' => !(count($keys['keys']) > 0),
+    ];
+
+    $form['key']['description'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Description'),
       '#description' => $this->t('Internal description to identify what the key is for.'),
       '#size' => 30,
       '#required' => TRUE,
-    );
-    $available_actions_link = Link::fromTextAndUrl(
-      $this->t('these tables'),
-      Url::fromUri(
-        'https://typesense.org/docs/0.25.2/api/api-keys.html#sample-actions', [
-          'attributes' => [
-            'target' => '_blank',
-          ],
-        ]
-      )
-    );
-    $form['key']['actions'] = array(
-      '#type' => 'textfield',
+    ];
+
+    $form['key']['actions'] = [
+      '#type' => 'checkboxes',
       '#title' => $this->t('Actions'),
-      '#description' => $this->t('Comma separated list of allowed actions. See @link for possible values.', [
-        '@link' => $available_actions_link->toString(),
-      ]),
-      '#size' => 30,
+      '#description' => $this->t('List of allowed actions'),
+      '#options' => $this->listActions(),
+      '#multiple' => TRUE,
       '#required' => TRUE,
-    );
-    $form['key']['collections'] = array(
+    ];
+
+    $form['key']['collections'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Collections'),
-      '#description' => $this->t('Comma separated list of collections that this key is scoped to. Supports regex. Eg: <code>coll.*</code> will match all collections that have "coll" in their name.'),
+      '#description' => $this->t('Comma separated list of collections that this key is scoped to. Supports regex. Eg: <code>coll.*</code> will match all collections that start with "coll".'),
       '#size' => 30,
       '#required' => TRUE,
-    );
+    ];
 
     $form['key']['operations'] = [
       '#type' => 'actions',
@@ -117,58 +115,50 @@ class ApiKeysForm extends FormBase {
       ],
     ];
 
-    $form['existing_keys']['list'] = $this->buildExistingKeysTable();
+    $form['existing_keys']['list'] = $this->buildExistingKeysTable($search_api_server->id());
 
     return $form;
   }
 
   /**
    * {@inheritdoc}
-   */
-  public function validateForm(array &$form, FormStateInterface $form_state): void {
-    // @todo Validate the form here.
-    // Example:
-    // @code
-    //   if (mb_strlen($form_state->getValue('message')) < 10) {
-    //     $form_state->setErrorByName(
-    //       'message',
-    //       $this->t('Message should be at least 10 characters.'),
-    //     );
-    //   }
-    // @endcode
-  }
-
-  /**
-   * {@inheritdoc}
    *
    * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
    */
-  public function submitForm(array &$form, FormStateInterface $form_state): void {
+  public function submitForm(
+    array &$form,
+    FormStateInterface $form_state,
+  ): void {
     $response = $this->typesenseClient->createKey([
       'description' => $form_state->getValue('description'),
-      'actions' => explode(',', $form_state->getValue('actions')),
+      'actions' => array_keys(array_filter($form_state->getValue('actions'))),
       'collections' => explode(',', $form_state->getValue('collections')),
     ]);
+
     $this->messenger()->addStatus(
       $this->t('The new key <code>@value</code> has been generated.', [
         '@value' => $response['value'],
-      ])
+      ]),
     );
     $this->messenger()->addWarning(
-      $this->t('The generated key is only returned during creation. You need to store this key carefully in a secure place.')
+      $this->t('The generated key is only returned during creation. You need to store this key carefully in a secure place.'),
     );
   }
 
   /**
    * Builds the existing keys table.
    *
+   * @param string $server_id
+   *   The server ID.
+   *
    * @return array
    *   The existing keys table.
+   *
    * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
    * @throws \Http\Client\Exception
    * @throws \Typesense\Exceptions\TypesenseClientError
    */
-  protected function buildExistingKeysTable(): array {
+  protected function buildExistingKeysTable(string $server_id): array {
     $table = [
       '#type' => 'table',
       '#caption' => $this->t('Existing API Keys'),
@@ -186,20 +176,20 @@ class ApiKeysForm extends FormBase {
 
     $rows = [];
     $keys = $this->typesenseClient->getKeys()->retrieve();
-    $keys = reset($keys) ?: [];
-    foreach ($keys as $key => $value) {
+    foreach ($keys['keys'] as $key => $value) {
       $rows[$key] = [
         'id' => $value['id'],
         'key_prefix' => $value['value_prefix'],
         'description' => $value['description'],
         'actions' => '[' . implode(', ', $value['actions']) . ']',
         'collections' => '[' . implode(', ', $value['collections']) . ']',
-        'expires_at' => $value['expires_at'] === 64723363199 ? 'never' : DrupalDateTime::createFromTimestamp($value['expires_at'])->format(DateTimePlus::FORMAT),
+        'expires_at' => $value['expires_at'] === 64723363199 ? 'never' : DrupalDateTime::createFromTimestamp($value['expires_at'])
+          ->format(DateTimePlus::FORMAT),
         'operations' => Link::fromTextAndUrl(
           $this->t('Delete'),
           Url::fromRoute(
-            'search_api_typesense.key.delete', [
-              'search_api_server' => 'typesense',
+            'search_api_typesense.server.api_keys.delete', [
+              'search_api_server' => $server_id,
               'id' => $value['id'],
             ],
           ),
@@ -209,6 +199,55 @@ class ApiKeysForm extends FormBase {
     $table['#rows'] = $rows;
 
     return $table;
+  }
+
+  /**
+   * List all the available actions.
+   *
+   * @return string[]
+   *   The list of actions.
+   */
+  private function listActions(): array {
+    return [
+      'collections:create' => 'collections:create',
+      'collections:delete' => 'collections:delete',
+      'collections:get' => 'collections:get',
+      'collections:list' => 'collections:list',
+      'collections:*' => 'collections:*',
+      'documents:search' => 'documents:search',
+      'documents:get' => 'documents:get',
+      'documents:create' => 'documents:create',
+      'documents:upsert' => 'documents:upsert',
+      'documents:update' => 'documents:update',
+      'documents:delete' => 'documents:delete',
+      'documents:import' => 'documents:import',
+      'documents:export' => 'documents:export',
+      'documents:*' => 'documents:*',
+      'aliases:list' => 'aliases:list',
+      'aliases:get' => 'aliases:get',
+      'aliases:create' => 'aliases:create',
+      'aliases:delete' => 'aliases:delete',
+      'aliases:*' => 'aliases:*',
+      'synonyms:list' => 'synonyms:list',
+      'synonyms:get' => 'synonyms:get',
+      'synonyms:create' => 'synonyms:create',
+      'synonyms:delete' => 'synonyms:delete',
+      'synonyms:*' => 'synonyms:*',
+      'overrides:list' => 'overrides:list',
+      'overrides:get' => 'overrides:get',
+      'overrides:create' => 'overrides:create',
+      'overrides:delete' => 'overrides:delete',
+      'overrides:*' => 'overrides:*',
+      'keys:list' => 'keys:list',
+      'keys:get' => 'keys:get',
+      'keys:create' => 'keys:create',
+      'keys:delete' => 'keys:delete',
+      'keys:*' => 'keys:*',
+      'metrics.json:list' => 'metrics.json:list',
+      'stats.json:list' => 'stats.json:list',
+      'debug:list' => 'debug:list',
+      '*' => '*',
+    ];
   }
 
 }

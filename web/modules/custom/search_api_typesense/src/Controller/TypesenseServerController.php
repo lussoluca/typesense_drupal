@@ -9,14 +9,18 @@ use Drupal\search_api\ServerInterface;
 use Drupal\search_api_typesense\Plugin\search_api\backend\SearchApiTypesenseBackend;
 
 /**
- *
+ * Controller for Typesense server operations.
  */
 class TypesenseServerController extends ControllerBase {
 
   /**
+   * Render metrics information.
+   *
    * @param \Drupal\search_api\ServerInterface $search_api_server
+   *   The server.
    *
    * @return array
+   *   The render array.
    *
    * @throws \Drupal\search_api\SearchApiException
    */
