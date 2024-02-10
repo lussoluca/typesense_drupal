@@ -4,6 +4,8 @@ declare(strict_types = 1);
 
 namespace Drupal\search_api_typesense\Form;
 
+use Drupal\Component\Datetime\DateTimePlus;
+use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
@@ -17,6 +19,11 @@ use Drupal\search_api_typesense\Plugin\search_api\backend\SearchApiTypesenseBack
  */
 class ApiKeysForm extends FormBase {
 
+  /**
+   * The Typesense client.
+   *
+   * @var \Drupal\search_api_typesense\Api\TypesenseClientInterface
+   */
   protected TypesenseClientInterface $typesenseClient;
 
   /**
@@ -30,6 +37,9 @@ class ApiKeysForm extends FormBase {
    * {@inheritdoc}
    *
    * @throws \Drupal\search_api\SearchApiException
+   * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
+   * @throws \Http\Client\Exception
+   * @throws \Typesense\Exceptions\TypesenseClientError
    */
   public function buildForm(array $form, FormStateInterface $form_state, ?ServerInterface $search_api_server = NULL): array {
     $backend = $search_api_server->getBackend();
@@ -46,7 +56,6 @@ class ApiKeysForm extends FormBase {
     }
 
     $this->typesenseClient = $backend->getTypesense();
-
     $documentation_link = Link::fromTextAndUrl(
       $this->t('documentation'),
       Url::fromUri(
@@ -135,6 +144,7 @@ class ApiKeysForm extends FormBase {
    * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
    */
   public function submitForm(array &$form, FormStateInterface $form_state): void {
+
     $key = $this->typesenseClient->createKey([
       'description' => $form_state->getValue('description'),
       'actions' => explode(',', $form_state->getValue('actions')),
@@ -152,7 +162,13 @@ class ApiKeysForm extends FormBase {
   }
 
   /**
+   * Builds the existing keys table.
+   *
+   * @return array
+   *   The existing keys table.
    * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
+   * @throws \Http\Client\Exception
+   * @throws \Typesense\Exceptions\TypesenseClientError
    */
   protected function buildExistingKeysTable(): array {
     $table = [
@@ -171,9 +187,26 @@ class ApiKeysForm extends FormBase {
     ];
 
     $rows = [];
-    $keys = $this->typesenseClient->getKeys();
+    $keys = $this->typesenseClient->getKeys()->retrieve();
+    $keys = reset($keys) ?: [];
     foreach ($keys as $key => $value) {
-      $rows[$key] = $value;
+      $rows[$key] = [
+        'id' => $value['id'],
+        'key_prefix' => $value['value_prefix'],
+        'description' => $value['description'],
+        'actions' => '[' . implode(', ', $value['actions']) . ']',
+        'collections' => '[' . implode(', ', $value['collections']) . ']',
+        'expires_at' => $value['expires_at'] === 64723363199 ? 'never' : DrupalDateTime::createFromTimestamp($value['expires_at'])->format(DateTimePlus::FORMAT),
+        'operations' => Link::fromTextAndUrl(
+          $this->t('Delete'),
+          Url::fromRoute(
+            'search_api_typesense.key.delete', [
+              'search_api_server' => 'typesense',
+              'id' => $value['id'],
+            ],
+          ),
+        ),
+      ];
     }
     $table['#rows'] = $rows;
 
