@@ -8,8 +8,6 @@ use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Http\Client\Exception;
 use Typesense\Client;
 use Typesense\Collection;
-use Typesense\Key;
-use Typesense\Keys;
 
 /**
  * The Search Api Typesense client.
@@ -299,11 +297,51 @@ class TypesenseClient implements TypesenseClientInterface {
   /**
    * {@inheritdoc}
    */
-  public function getKeys(): Keys {
+  public function getKeys(): array {
     try {
-      return $this->client->getKeys();
+      return $this->client->getKeys()->retrieve();
     }
     catch (SearchApiTypesenseException $e) {
+      throw new SearchApiTypesenseException($e->getMessage(), $e->getCode(), $e);
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function createKey(array $schema): array {
+    try {
+      return $this->client->keys->create($schema);
+    }
+    catch (\Exception | Exception $e) {
+      throw new SearchApiTypesenseException($e->getMessage(), $e->getCode(), $e);
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function retrieveKey(int $key_id): array {
+    try {
+      $key = $this->client->keys[$key_id];
+
+      return $key->retrieve();
+    }
+    catch (\Exception | Exception $e) {
+      throw new SearchApiTypesenseException($e->getMessage(), $e->getCode(), $e);
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function deleteKey(int $key_id): array {
+    try {
+      $key = $this->client->keys[$key_id];
+
+      return $key->delete();
+    }
+    catch (\Exception | Exception $e) {
       throw new SearchApiTypesenseException($e->getMessage(), $e->getCode(), $e);
     }
   }
@@ -342,35 +380,6 @@ class TypesenseClient implements TypesenseClientInterface {
     }
 
     return $value;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function createKey(array $schema): array {
-    try {
-      return $this->client->keys->create($schema);
-    }
-    catch (\Exception | Exception $e) {
-      throw new SearchApiTypesenseException($e->getMessage(), $e->getCode(), $e);
-    }
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function retrieveKey(string $key_name): ?Key {
-    try {
-      $key = $this->client->keys[$key_name];
-      // Ensure that the key exists on the typesense server by retrieving it.
-      // This throws exception if it is not found.
-      $key->retrieve();
-
-      return $key;
-    }
-    catch (\Exception | Exception $e) {
-      return NULL;
-    }
   }
 
 }

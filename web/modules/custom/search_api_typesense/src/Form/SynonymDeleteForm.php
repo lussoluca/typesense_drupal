@@ -8,15 +8,15 @@ use Drupal\Core\Form\ConfirmFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\Url;
-use Drupal\search_api\ServerInterface;
+use Drupal\search_api\IndexInterface;
 use Drupal\search_api_typesense\Api\SearchApiTypesenseException;
 use Drupal\search_api_typesense\Api\TypesenseClientInterface;
 use Drupal\search_api_typesense\Plugin\search_api\backend\SearchApiTypesenseBackend;
 
 /**
- * Form to delete a key.
+ * Form to delete a synonym.
  */
-class KeyDeleteForm extends ConfirmFormBase {
+class SynonymDeleteForm extends ConfirmFormBase {
 
   /**
    * The Typesense client.
@@ -26,24 +26,24 @@ class KeyDeleteForm extends ConfirmFormBase {
   protected TypesenseClientInterface $typesenseClient;
 
   /**
-   * The search API server.
+   * The search API index.
    *
-   * @var \Drupal\search_api\ServerInterface|null
+   * @var \Drupal\search_api\IndexInterface|null
    */
-  private ?ServerInterface $searchApiServer;
+  private ?IndexInterface $searchApiIndex;
 
   /**
-   * The key ID.
+   * The synonym ID.
    *
-   * @var int|null
+   * @var string|null
    */
-  private ?int $keyId;
+  private ?string $synonymId;
 
   /**
    * {@inheritdoc}
    */
   public function getFormId(): string {
-    return 'search_api_typesense_key_delete';
+    return 'search_api_typesense_synonym_delete';
   }
 
   /**
@@ -54,10 +54,10 @@ class KeyDeleteForm extends ConfirmFormBase {
   public function buildForm(
     array $form,
     FormStateInterface $form_state,
-    ServerInterface $search_api_server = NULL,
-    int $id = NULL,
+    IndexInterface $search_api_index = NULL,
+    string $id = NULL,
   ): array {
-    $backend = $search_api_server->getBackend();
+    $backend = $search_api_index->getServerInstance()->getBackend();
     if (!$backend instanceof SearchApiTypesenseBackend) {
       throw new \InvalidArgumentException('The server must use the Typesense backend.');
     }
@@ -68,8 +68,8 @@ class KeyDeleteForm extends ConfirmFormBase {
       );
     }
 
-    $this->searchApiServer = $search_api_server;
-    $this->keyId = $id;
+    $this->searchApiIndex = $search_api_index;
+    $this->synonymId = $id;
     $this->typesenseClient = $backend->getTypesense();
 
     return parent::buildForm($form, $form_state);
@@ -83,20 +83,20 @@ class KeyDeleteForm extends ConfirmFormBase {
     FormStateInterface $form_state,
   ): void {
     try {
-      $key = $this->typesenseClient->retrieveKey($this->keyId);
-      $this->typesenseClient->deleteKey($this->keyId);
+      $synonym = $this->typesenseClient->deleteSynonym($this->searchApiIndex->id(),
+        $this->synonymId);
 
-      $this->messenger()->addStatus($this->t('Key %description has been deleted.',
-        [
-          '%description' => $key['description'],
-        ]));
+      $this->messenger()->addStatus($this->t('Synonym %id has been deleted.', [
+        '%id' => $synonym['id'],
+      ]));
     }
     catch (SearchApiTypesenseException $e) {
-      $this->messenger()->addError($this->t('The key could not be deleted.'));
+      $this->messenger()
+        ->addError($this->t('The synonym could not be deleted.'));
     }
 
-    $form_state->setRedirect('search_api_typesense.server.api_keys', [
-      'search_api_server' => $this->searchApiServer->id(),
+    $form_state->setRedirect('search_api_typesense.collection.synonyms', [
+      'search_api_index' => $this->searchApiIndex->id(),
     ]);
   }
 
@@ -106,10 +106,11 @@ class KeyDeleteForm extends ConfirmFormBase {
    * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
    */
   public function getQuestion(): TranslatableMarkup {
-    $key = $this->typesenseClient->retrieveKey($this->keyId);
+    $synonym = $this->typesenseClient->retrieveSynonym($this->searchApiIndex->id(),
+      $this->synonymId);
 
-    return $this->t('Do you want to delete key %desc?', [
-      '%desc' => $key['description'],
+    return $this->t('Do you want to delete synonym %id?', [
+      '%id' => $synonym['id'],
     ]);
   }
 
@@ -117,10 +118,8 @@ class KeyDeleteForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function getCancelUrl(): Url {
-    return Url::fromRoute('search_api_typesense.server.api_keys', [
-      'search_api_server' => $this->getRequest()
-        ->get('search_api_server')
-        ->id(),
+    return Url::fromRoute('search_api_typesense.collection.synonyms', [
+      'search_api_index' => $this->searchApiIndex->id(),
     ]);
   }
 

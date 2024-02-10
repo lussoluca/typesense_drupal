@@ -38,8 +38,6 @@ class ApiKeysForm extends FormBase {
    *
    * @throws \Drupal\search_api\SearchApiException
    * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
-   * @throws \Http\Client\Exception
-   * @throws \Typesense\Exceptions\TypesenseClientError
    */
   public function buildForm(
     array $form,
@@ -72,7 +70,7 @@ class ApiKeysForm extends FormBase {
       ),
     );
 
-    $keys = $this->typesenseClient->getKeys()->retrieve();
+    $keys = $this->typesenseClient->getKeys();
     $form['key'] = [
       '#type' => 'details',
       '#title' => $this->t('Create API Key'),
@@ -115,7 +113,7 @@ class ApiKeysForm extends FormBase {
       ],
     ];
 
-    $form['existing_keys']['list'] = $this->buildExistingKeysTable($search_api_server->id());
+    $form['existing_keys']['list'] = $this->buildExistingKeysTable($keys, $search_api_server->id());
 
     return $form;
   }
@@ -136,8 +134,8 @@ class ApiKeysForm extends FormBase {
     ]);
 
     $this->messenger()->addStatus(
-      $this->t('The new key <code>@value</code> has been generated.', [
-        '@value' => $response['value'],
+      $this->t('The new key %value has been generated.', [
+        '%value' => $response['value'],
       ]),
     );
     $this->messenger()->addWarning(
@@ -148,17 +146,15 @@ class ApiKeysForm extends FormBase {
   /**
    * Builds the existing keys table.
    *
+   * @param array $keys
+   *   The existing keys.
    * @param string $server_id
    *   The server ID.
    *
    * @return array
    *   The existing keys table.
-   *
-   * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
-   * @throws \Http\Client\Exception
-   * @throws \Typesense\Exceptions\TypesenseClientError
    */
-  protected function buildExistingKeysTable(string $server_id): array {
+  protected function buildExistingKeysTable(array $keys, string $server_id): array {
     $table = [
       '#type' => 'table',
       '#caption' => $this->t('Existing API Keys'),
@@ -175,7 +171,6 @@ class ApiKeysForm extends FormBase {
     ];
 
     $rows = [];
-    $keys = $this->typesenseClient->getKeys()->retrieve();
     foreach ($keys['keys'] as $key => $value) {
       $rows[$key] = [
         'id' => $value['id'],

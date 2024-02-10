@@ -5,8 +5,6 @@ declare(strict_types = 1);
 namespace Drupal\search_api_typesense\Api;
 
 use Typesense\Collection;
-use Typesense\Key;
-use Typesense\Keys;
 
 /**
  * Interface for the Search Api Typesense client.
@@ -250,27 +248,12 @@ interface TypesenseClientInterface {
   /**
    * Returns current server keys.
    *
-   * @return \Typesense\Keys
+   * @return array
    *   The array of the server's keys.
    *
    * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
    */
-  public function getKeys(): Keys;
-
-  /**
-   * Prepares items for typesense-indexing.
-   *
-   * @param string|int|array|null $value
-   *   The incoming entity value from Drupal.
-   * @param string $type
-   *   The specified data type from the Search API index configuration.
-   *
-   * @return bool|float|int|string
-   *   The prepared item, ready for Typesense indexing.
-   *
-   * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
-   */
-  public function prepareItemValue(string|int|array|null $value, string $type): bool|float|int|string;
+  public function getKeys(): array;
 
   /**
    * Creates a key.
@@ -290,16 +273,46 @@ interface TypesenseClientInterface {
   /**
    * Retrieves a key.
    *
-   * @param string $key_name
-   *   The name of the key to retrieve.
+   * @param int $key_id
+   *   The id of the key to retrieve.
    *
-   * @return \Typesense\Key|null
+   * @return array
    *   The retrieved key.
    *
    * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
    *
    * @see https://typesense.org/docs/0.25.2/api/api-keys.html#retrieve-an-api-key
    */
-  public function retrieveKey(string $key_name): ?Key;
+  public function retrieveKey(int $key_id): array;
+
+  /**
+   * Deletes a key.
+   *
+   * @param int $key_id
+   *   The id of the key to delete.
+   *
+   * @return array
+   *   The deleted key.
+   *
+   * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
+   *
+   * @see https://typesense.org/docs/0.25.2/api/api-keys.html#delete-api-key
+   */
+  public function deleteKey(int $key_id): array;
+
+  /**
+   * Prepares items for typesense-indexing.
+   *
+   * @param string|int|array|null $value
+   *   The incoming entity value from Drupal.
+   * @param string $type
+   *   The specified data type from the Search API index configuration.
+   *
+   * @return bool|float|int|string
+   *   The prepared item, ready for Typesense indexing.
+   *
+   * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
+   */
+  public function prepareItemValue(string|int|array|null $value, string $type): bool|float|int|string;
 
 }
