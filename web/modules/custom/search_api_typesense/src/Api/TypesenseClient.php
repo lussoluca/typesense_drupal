@@ -349,15 +349,13 @@ class TypesenseClient implements TypesenseClientInterface {
   /**
    * {@inheritdoc}
    */
-  public function createKey(array $schema): Key {
+  public function createKey(array $schema): void {
     try {
       $this->client->keys->create($schema);
     }
     catch (\Exception|Exception $e) {
       throw new SearchApiTypesenseException($e->getMessage(), $e->getCode(), $e);
     }
-
-    return $this->retrieveKey($schema['description']);
   }
 
   /**

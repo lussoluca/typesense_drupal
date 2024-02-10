@@ -144,16 +144,16 @@ class ApiKeysForm extends FormBase {
    * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
    */
   public function submitForm(array &$form, FormStateInterface $form_state): void {
-
-    $key = $this->typesenseClient->createKey([
-      'description' => $form_state->getValue('description'),
+    $description = $form_state->getValue('description');
+    $this->typesenseClient->createKey([
+      'description' => $description,
       'actions' => explode(',', $form_state->getValue('actions')),
       'collections' => explode(',', $form_state->getValue('collections')),
     ]);
 
     $this->messenger()->addStatus(
       $this->t('The new key @description has been generated.', [
-        '@description' => $key['description'],
+        '@description' => $description,
       ])
     );
     $this->messenger()->addWarning(
