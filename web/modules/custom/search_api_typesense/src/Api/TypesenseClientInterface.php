@@ -241,7 +241,7 @@ interface TypesenseClientInterface {
    * Returns the metrics info from the Typesense server.
    *
    * @return array
-   *   An associative array containing ...
+   *   An associative array containing the server's metrics.
    *
    * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
    */

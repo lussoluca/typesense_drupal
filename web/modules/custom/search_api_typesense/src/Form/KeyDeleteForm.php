@@ -15,7 +15,7 @@ use Drupal\search_api_typesense\Plugin\search_api\backend\SearchApiTypesenseBack
 /**
  * Form to delete a key.
  */
-final class KeyDeleteForm extends ConfirmFormBase {
+class KeyDeleteForm extends ConfirmFormBase {
 
   /**
    * The Typesense client.
