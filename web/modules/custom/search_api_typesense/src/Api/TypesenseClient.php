@@ -139,18 +139,18 @@ class TypesenseClient implements TypesenseClientInterface {
   /**
    * {@inheritdoc}
    */
-  public function retrieveDocument(string $collection_name, string $id): array {
+  public function retrieveDocument(string $collection_name, string $id): array|null {
     try {
       $collection = $this->retrieveCollection($collection_name);
 
       if ($collection != NULL) {
-        return $collection->documents[$id]->retrieve();
+        return $collection->documents[$this->prepareItemValue($id, 'typesense_id')]->retrieve();
       }
 
-      return [];
+      return NULL;
     }
     catch (\Exception $e) {
-      throw new SearchApiTypesenseException($e->getMessage(), $e->getCode(), $e);
+      return NULL;
     }
   }
 
@@ -162,7 +162,13 @@ class TypesenseClient implements TypesenseClientInterface {
       $collection = $this->retrieveCollection($collection_name);
 
       if ($collection != NULL) {
-        return $collection->documents[$id]->delete();
+        $typesense_id = $this->prepareItemValue($id, 'typesense_id');
+
+        $document = $this->retrieveDocument($collection_name, $id);
+        if ($document != NULL) {
+
+          return $collection->documents[$typesense_id]->delete();
+        }
       }
 
       return [];
@@ -365,6 +371,14 @@ class TypesenseClient implements TypesenseClientInterface {
     }
 
     switch ($type) {
+      // TypeSense does not allow characters that require encoding in urls. The
+      // Search API ID has "/" character in it that is not compatible with that
+      // requirement. So replace that with an underscore.
+      // @see https://typesense.org/docs/0.21.0/api/documents.html#index-a-document.
+      case 'typesense_id':
+        $value = \str_replace('/', '_', $value);
+        break;
+
       case 'typesense_bool':
         $value = (bool) $value;
         break;

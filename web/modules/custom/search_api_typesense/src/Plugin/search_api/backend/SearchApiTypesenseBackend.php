@@ -525,7 +525,7 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
       foreach ($items as $key => $item) {
         // Start the document with the item id.
         $document = [
-          'id' => $key,
+          'id' => $this->typesense->prepareItemValue($key, 'typesense_id'),
         ];
 
         // Add each contained value to the document.
@@ -579,7 +579,10 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
   public function deleteItems(IndexInterface $index, array $item_ids): void {
     try {
       $collection = $this->getCollectionName($index);
-      $this->typesense->deleteDocuments($collection, ['id' => $item_ids]);
+      foreach ($item_ids as $item_id) {
+        $this->typesense->deleteDocument($collection, $item_id);
+      }
+
     }
     catch (SearchApiTypesenseException $e) {
       $this->logger->error($e->getMessage());

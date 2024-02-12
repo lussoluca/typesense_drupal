@@ -95,21 +95,21 @@ interface TypesenseClientInterface {
   public function createDocument(string $collection_name, array $document): void;
 
   /**
-   * Retrieves a specific indexd document.
+   * Retrieves a specific indexed document.
    *
    * @param string $collection_name
    *   The name of the collection to query for the document.
    * @param string $id
    *   The id of the document to retrieve.
    *
-   * @return array
+   * @return array|null
    *   The retrieved document.
    *
    * @see https://typesense.org/docs/0.19.0/api/documents.html#retrieve-a-document
    *
    * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
    */
-  public function retrieveDocument(string $collection_name, string $id): array;
+  public function retrieveDocument(string $collection_name, string $id): array|null;
 
   /**
    * Deletes a specific indexed document.
