@@ -97,7 +97,10 @@ class TypesenseClient implements TypesenseClientInterface {
    */
   public function dropCollection(?string $collection_name): void {
     try {
-      $this->client->collections[$collection_name]->delete();
+      $collections = $this->client->collections;
+      if ($collections->offsetExists($collection_name)) {
+        $collections[$collection_name]->delete();
+      }
     }
     catch (\Exception $e) {
       throw new SearchApiTypesenseException($e->getMessage(), $e->getCode(), $e);
