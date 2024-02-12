@@ -68,6 +68,7 @@ class TypesenseClient implements TypesenseClientInterface {
       // Ensure that collection exists on the typesense server by retrieving it.
       // This throws exception if it is not found.
       $collection->retrieve();
+
       return $collection;
     }
     catch (\Exception $e) {

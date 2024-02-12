@@ -11,6 +11,7 @@ use Drupal\search_api\Backend\BackendPluginBase;
 use Drupal\search_api\IndexInterface;
 use Drupal\search_api\Plugin\PluginFormTrait;
 use Drupal\search_api\Query\QueryInterface;
+use Drupal\search_api\SearchApiException;
 use Drupal\search_api_typesense\Api\Config;
 use Drupal\search_api_typesense\Api\SearchApiTypesenseException;
 use Drupal\search_api_typesense\Api\TypesenseClient;
@@ -85,7 +86,7 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
     protected $logger,
     protected $fieldsHelper,
     private readonly ConfigFactoryInterface $configFactory,
-    protected $messenger
+    protected $messenger,
   ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
 
@@ -108,14 +109,20 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
     }
     catch (SearchApiTypesenseException $e) {
       $this->logger->error($e->getMessage());
-      $this->messenger()->addError($this->t('Unable to retrieve server and/or index information.'));
+      $this->messenger()
+        ->addError($this->t('Unable to retrieve server and/or index information.'));
     }
   }
 
   /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+  public static function create(
+    ContainerInterface $container,
+    array $configuration,
+    $plugin_id,
+    $plugin_definition,
+  ) {
     return new static(
       $configuration,
       $plugin_id,
@@ -140,13 +147,14 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
       // corresponding collection.
       $num = 1;
       foreach ($this->indexes as $index) {
-        $collection = $this->typesense->retrieveCollection($index->getProcessor('typesense_schema')->getConfiguration()['schema']['name']);
+        $collection_name = $this->getCollectionName($index);
+        $collection = $this->typesense->retrieveCollection($collection_name);
 
         $info[] = [
           'label' => $this->t('Typesense collection @num: name', [
             '@num' => $num,
           ]),
-          'info' => $index->getProcessor('typesense_schema')->getConfiguration()['schema']['name'],
+          'info' => $collection_name,
         ];
 
         $collection_created = [
@@ -164,7 +172,8 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
         ];
 
         if ($collection != NULL) {
-          $collection_created['info'] = date(DATE_ISO8601, $collection->retrieve()['created_at']);
+          $collection_created['info'] = date(DATE_ISO8601,
+            $collection->retrieve()['created_at']);
           $collection_documents['info'] = $collection->retrieve()['num_documents'] > '0'
             ? number_format($collection->retrieve()['num_documents'])
             : $this->t('no documents have been indexed');
@@ -197,7 +206,8 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
     }
     catch (SearchApiTypesenseException $e) {
       $this->logger->error($e->getMessage());
-      $this->messenger()->addError($this->t('Unable to retrieve server and/or index information.'));
+      $this->messenger()
+        ->addError($this->t('Unable to retrieve server and/or index information.'));
     }
 
     return [];
@@ -209,12 +219,13 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
   protected function getClientConfiguration($read_only = TRUE): ?Config {
     $api_key_key = $read_only ? 'ro_api_key' : 'rw_api_key';
 
-    $config = $this->configFactory->get('search_api.server.' . $this->server->id())->get('backend_config');
+    $config = $this->configFactory->get('search_api.server.' . $this->server->id())
+      ->get('backend_config');
 
     if (isset($config[$api_key_key], $config['nodes'], $config['retry_interval_seconds'])) {
       return new Config(
-        api_key: $config[$api_key_key],
-        nodes: array_filter($config['nodes'], function ($key) {
+        api_key               : $config[$api_key_key],
+        nodes                 : array_filter($config['nodes'], function ($key) {
           return is_numeric($key);
         }, ARRAY_FILTER_USE_KEY),
         retry_interval_seconds: intval($config['retry_interval_seconds']),
@@ -290,7 +301,8 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
     }
     catch (SearchApiTypesenseException $e) {
       $this->logger->error($e->getMessage());
-      $this->messenger()->addError($this->t('Unable to sync Search API index schema and Typesense schema.'));
+      $this->messenger()
+        ->addError($this->t('Unable to sync Search API index schema and Typesense schema.'));
     }
   }
 
@@ -300,7 +312,10 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
    * @todo: Adding new nodes by AJAX is broken, so:
    *   - unbreak it,
    */
-  public function buildConfigurationForm(array $form, FormStateInterface $form_state): array {
+  public function buildConfigurationForm(
+    array $form,
+    FormStateInterface $form_state,
+  ): array {
     $form['#tree'] = TRUE;
 
     $num_nodes = $form_state->get('num_nodes');
@@ -435,7 +450,10 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
    *
    * Selects and returns the fieldset with the nodes in it.
    */
-  public function addNodeCallback(array &$form, FormStateInterface $form_state): array {
+  public function addNodeCallback(
+    array &$form,
+    FormStateInterface $form_state,
+  ): array {
     return $form['backend_config']['nodes'];
   }
 
@@ -458,7 +476,10 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
    *
    * Decrements the max counter and causes a form rebuild.
    */
-  public function removeNode(array $form, FormStateInterface $form_state): void {
+  public function removeNode(
+    array $form,
+    FormStateInterface $form_state,
+  ): void {
     $node_field = $form_state->get('num_nodes');
 
     if ($node_field > 1) {
@@ -473,16 +494,18 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
    * {@inheritdoc}
    */
   public function removeIndex($index): void {
-    if ($index instanceof IndexInterface) {
-      $index = $index->getProcessor('typesense_schema')->getConfiguration()['schema']['name'];
+    $collection = $this->getCollectionName($index);
+    if ($collection == NULL) {
+      return;
     }
+
     try {
-      $this->typesense->dropCollection($index);
+      $this->typesense->dropCollection($collection);
     }
     catch (SearchApiTypesenseException $e) {
       $this->logger->error($e->getMessage());
       $this->messenger()->addError($this->t('Unable to remove index @index.', [
-        '@index' => $index,
+        '@index' => $collection,
       ]));
     }
   }
@@ -495,7 +518,7 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
    */
   public function indexItems(IndexInterface $index, array $items): array {
     try {
-      $collection_name = $index->getProcessor('typesense_schema')->getConfiguration()['schema']['name'];
+      $collection = $this->getCollectionName($index);
       $indexed_documents = [];
 
       // Loop over each indexable item.
@@ -514,22 +537,29 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
           // Values might be [], so we have to handle that case separately from
           // the main loop-over-the-field-values routine.
           //
-          // In either case, we rely on the Typesense service to enfore the
+          // In either case, we rely on the Typesense service to enforce the
           // datatype.
           if (count($field_values) == 0) {
             $value = $this->typesense->prepareItemValue(NULL, $field_type);
           }
           else {
             foreach ($field_values as $field_value) {
-              $value = $this->typesense->prepareItemValue($field_value, $field_type);
+              $value = $this->typesense->prepareItemValue($field_value,
+                $field_type);
             }
+          }
+
+          // 'id' is a reserved field name in Typesense. If the field name is
+          // 'id', we change it to 'search_api_id'.
+          if ($field_name == 'id') {
+            $field_name = 'search_api_id';
           }
 
           $document[$field_name] = $value;
         }
 
         // Create the document.
-        $this->typesense->createDocument($collection_name, $document);
+        $this->typesense->createDocument($collection, $document);
         $indexed_documents[] = $key;
       }
 
@@ -548,7 +578,8 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
    */
   public function deleteItems(IndexInterface $index, array $item_ids): void {
     try {
-      $this->typesense->deleteDocuments($index->getProcessor('typesense_schema')->getConfiguration()['schema']['name'], ['id' => $item_ids]);
+      $collection = $this->getCollectionName($index);
+      $this->typesense->deleteDocuments($collection, ['id' => $item_ids]);
     }
     catch (SearchApiTypesenseException $e) {
       $this->logger->error($e->getMessage());
@@ -561,7 +592,10 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
   /**
    * {@inheritdoc}
    */
-  public function deleteAllIndexItems(IndexInterface $index, $datasource_id = NULL): void {
+  public function deleteAllIndexItems(
+    IndexInterface $index,
+    $datasource_id = NULL,
+  ): void {
     try {
       // The easiest way to remove all items is to drop the collection
       // altogether and then recreate it.
@@ -585,17 +619,22 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
    * {@inheritdoc}
    */
   public function updateIndex(IndexInterface $index): void {
+    $collection = $this->getCollectionName($index);
+    if ($collection == NULL) {
+      return;
+    }
+
     try {
       if ($this->indexFieldsUpdated($index)) {
         $index->reindex();
-        $this->removeIndex($index->getProcessor('typesense_schema')->getConfiguration()['schema']['name']);
+        $this->removeIndex($index);
         $this->syncIndexesAndCollections();
       }
     }
     catch (SearchApiTypesenseException $e) {
       $this->logger->error($e->getMessage());
       $this->messenger()->addError($this->t('Unable to update index @index.', [
-        '@index' => $index->getProcessor('typesense_schema')->getConfiguration()['schema']['name'],
+        '@index' => $collection,
       ]));
     }
   }
@@ -625,15 +664,19 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
       return FALSE;
     }
 
-    if (count(array_diff_key($old_fields, $new_fields)) == 0 || count(array_diff_key($new_fields, $old_fields)) == 0) {
+    if (count(array_diff_key($old_fields,
+        $new_fields)) == 0 || count(array_diff_key($new_fields,
+        $old_fields)) == 0) {
       return TRUE;
     }
 
     $processor_name = 'typesense_schema';
     $old_config = $original->getProcessor($processor_name)->getConfiguration();
     $new_config = $index->getProcessor($processor_name)->getConfiguration();
-    $old_schema_config = array_key_exists('schema', $old_config['schema']) ? $old_config['schema']['fields'] : NULL;
-    $new_schema_config = array_key_exists('schema', $new_config['schema']) ? $new_config['schema']['fields'] : NULL;
+    $old_schema_config = array_key_exists('schema',
+      $old_config['schema']) ? $old_config['schema']['fields'] : NULL;
+    $new_schema_config = array_key_exists('schema',
+      $new_config['schema']) ? $new_config['schema']['fields'] : NULL;
 
     if ($old_schema_config == NULL || $new_schema_config == NULL) {
       return FALSE;
@@ -701,6 +744,36 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
    */
   public function getTypesense(): ?TypesenseClientInterface {
     return $this->typesense;
+  }
+
+  /**
+   * Return the collection name for the given index.
+   *
+   * @param \Drupal\search_api\IndexInterface|null $index
+   *   The index.
+   *
+   * @return string|null
+   *   The collection name or NULL.
+   */
+  private function getCollectionName(?IndexInterface $index): ?string {
+    if ($index == NULL) {
+      return NULL;
+    }
+
+    try {
+      $collection = $index
+        ->getProcessor('typesense_schema')
+        ->getConfiguration();
+
+      if (!array_key_exists('schema', $collection)) {
+        return NULL;
+      }
+
+      return $collection['schema']['name'];
+    }
+    catch (SearchApiException $e) {
+      return NULL;
+    }
   }
 
 }
