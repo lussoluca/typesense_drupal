@@ -69,22 +69,39 @@ final class SynonymForm extends FormBase {
       ),
     );
 
+    $op = $this->getRequest()->query->get('op') ?? 'add';
+    $synonym = NULL;
+    if ($op == 'edit') {
+      $synonym = $this->typesenseClient->retrieveSynonym(
+        $search_api_index->id(),
+        $this->getRequest()->query->get('id'),
+      );
+    }
+
     $synonyms = $this->typesenseClient->retrieveSynonyms($search_api_index->id());
     $form['synonym'] = [
       '#type' => 'details',
-      '#title' => $this->t('Add synonym'),
+      '#title' => $op == 'edit' ? $this->t('Edit synonym') : $this->t('Add synonym'),
       '#description' => $this->t('See the @link for more information.', [
         '@link' => $documentation_link->toString(),
       ]),
-      '#open' => !(count($synonyms['synonyms']) > 0),
+      '#open' => !(count($synonyms['synonyms']) > 0) || $op == 'edit',
     ];
 
     $form['synonym']['id'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Id'),
       '#required' => TRUE,
+      '#default_value' => $op == 'edit' ? $this->getRequest()->query->get('id') : '',
+      '#disabled' => $op == 'edit',
     ];
 
+    $default_type = 'one_way';
+    if ($op == 'edit') {
+      if ($synonym['root'] == '') {
+        $default_type = 'multi_way';
+      }
+    }
     $form['synonym']['type'] = [
       '#type' => 'select',
       '#title' => $this->t('Type'),
@@ -92,18 +109,20 @@ final class SynonymForm extends FormBase {
         'one_way' => $this->t('One-way'),
         'multi_way' => $this->t('Multi-way'),
       ],
+      '#default_value' => $op == 'edit' ? $default_type : 'one_way',
     ];
 
     $form['synonym']['root'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Root'),
       '#description' => $this->t('For 1-way synonyms, indicates the root word that words in the synonyms parameter map to.'),
+      '#default_value' => $op == 'edit' ? $synonym['root'] : '',
       '#states' => [
         'visible' => [
-          ':input[name="type"]' => ['value' => 'multi_way'],
+          ':input[name="type"]' => ['value' => 'one_way'],
         ],
         'required' => [
-          ':input[name="type"]' => ['value' => 'multi_way'],
+          ':input[name="type"]' => ['value' => 'one_way'],
         ],
       ],
     ];
@@ -112,6 +131,7 @@ final class SynonymForm extends FormBase {
       '#type' => 'textfield',
       '#title' => $this->t('Synonyms'),
       '#description' => $this->t('List of words that should be considered as synonyms. Separate words with comma.'),
+      '#default_value' => $op == 'edit' ? implode(',', $synonym['synonyms']) : '',
       '#required' => TRUE,
     ];
 
@@ -119,12 +139,14 @@ final class SynonymForm extends FormBase {
       '#type' => 'textfield',
       '#title' => $this->t('Symbols to index'),
       '#description' => $this->t('By default, special characters are dropped from synonyms. Use this attribute to specify which special characters should be indexed as is.'),
+      '#default_value' => $op == 'edit' && array_key_exists('symbols_to_index', $synonym) ? implode(',', $synonym['symbols_to_index']) : '',
     ];
 
     $form['synonym']['locale'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Locale'),
       '#description' => $this->t('Locale for the synonym, leave blank to use the standard tokenizer.'),
+      '#default_value' => $op == 'edit'  && array_key_exists('locale', $synonym) ? $synonym['locale'] : '',
     ];
 
     $form['index_id'] = [
@@ -136,9 +158,24 @@ final class SynonymForm extends FormBase {
       '#type' => 'actions',
       'submit' => [
         '#type' => 'submit',
-        '#value' => $this->t('Add new'),
+        '#value' => $op == 'edit' ? $this->t('Update') : $this->t('Add new'),
       ],
     ];
+
+    if ($op == 'edit') {
+      $form['synonym']['operations']['cancel'] = [
+        '#type' => 'link',
+        '#title' => $this->t('Cancel'),
+        '#url' => Url::fromRoute(
+          'search_api_typesense.collection.synonyms', [
+            'search_api_index' => $search_api_index->id(),
+          ],
+        ),
+        '#attributes' => [
+          'class' => ['button'],
+        ],
+      ];
+    }
 
     $form['existing_synonyms']['list'] = $this->buildExistingSynonymsTable($synonyms, $search_api_index->id());
 
@@ -159,17 +196,39 @@ final class SynonymForm extends FormBase {
       $synonym['synonyms'] = explode(',', $form_state->getValue('synonyms'));
     }
 
+    if ($form_state->getValue('symbols_to_index') != '') {
+      $synonym['symbols_to_index'] = explode(',', $form_state->getValue('symbols_to_index'));
+    }
+
+    if ($form_state->getValue('locale') != '') {
+      $synonym['locale'] = $form_state->getValue('locale');
+    }
+
     $response = $this->typesenseClient->createSynonym(
       $form_state->getValue('index_id'),
       $form_state->getValue('id'),
       $synonym,
     );
 
-    $this->messenger()->addStatus(
-      $this->t('Synonym %id has been added.', [
-        '%id' => $response['id'],
-      ]),
-    );
+    $op = $this->getRequest()->query->get('op') ?? 'add';
+    if ($op == 'edit') {
+      $this->messenger()->addStatus(
+        $this->t('Synonym %id has been updated.', [
+          '%id' => $response['id'],
+        ]),
+      );
+    }
+    else {
+      $this->messenger()->addStatus(
+        $this->t('Synonym %id has been added.', [
+          '%id' => $response['id'],
+        ]),
+          );
+    }
+
+    $form_state->setRedirect('search_api_typesense.collection.synonyms', [
+      'search_api_index' => $form_state->getValue('index_id'),
+    ]);
   }
 
   /**
@@ -208,15 +267,36 @@ final class SynonymForm extends FormBase {
         'synonyms' => implode(', ', $value['synonyms']),
         'symbols_to_index' => array_key_exists('symbols_to_index', $value) ? implode(', ', $value['symbols_to_index']) : '',
         'locale'  => array_key_exists('locale', $value) ? $value['locale'] : '',
-        'operations' => Link::fromTextAndUrl(
-          $this->t('Delete'),
-          Url::fromRoute(
-            'search_api_typesense.collection.synonyms.delete', [
-              'search_api_index' => $index_id,
-              'id' => $value['id'],
+        'operations' => [
+          'data' => [
+            '#type' => 'dropbutton',
+            '#dropbutton_type' => 'small',
+            '#links' => [
+              'edit' => [
+                'title' => $this
+                  ->t('Edit'),
+                'url' => Url::fromRoute(
+                  'search_api_typesense.collection.synonyms', [
+                    'search_api_index' => $index_id,
+                    'op' => 'edit',
+                    'id' => $value['id'],
+
+                  ],
+                ),
+              ],
+              'delete' => [
+                'title' => $this
+                  ->t('Delete'),
+                'url' => Url::fromRoute(
+                  'search_api_typesense.collection.synonyms.delete', [
+                    'search_api_index' => $index_id,
+                    'id' => $value['id'],
+                  ],
+                ),
+              ],
             ],
-          ),
-        ),
+          ],
+        ],
       ];
     }
     $table['#rows'] = $rows;
