@@ -27,6 +27,7 @@
         "phpstan/phpstan-deprecation-rules": "*",
         "phpstan/phpstan-phpunit": "1.4.x-dev",
         "phpstan/phpstan-strict-rules": "^1.5",
-        "previousnext/coding-standard": "^0.1.2"
+        "previousnext/coding-standard": "^1.0",
+        "phpmd/phpmd" : "@stable"
     }
 }

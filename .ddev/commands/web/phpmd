@@ -1,0 +1,3 @@
+#!/bin/bash
+
+vendor/bin/phpmd web/modules/custom/search_api_typesense text web/modules/custom/search_api_typesense/phpmd.xml

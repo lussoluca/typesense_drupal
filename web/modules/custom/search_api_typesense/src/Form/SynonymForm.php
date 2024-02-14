@@ -11,11 +11,14 @@ use Drupal\Core\Url;
 use Drupal\search_api\IndexInterface;
 use Drupal\search_api_typesense\Api\TypesenseClientInterface;
 use Drupal\search_api_typesense\Plugin\search_api\backend\SearchApiTypesenseBackend;
+use Drupal\search_api_typesense\TypesenseTrait;
 
 /**
  * Manage the synonyms.
  */
 final class SynonymForm extends FormBase {
+
+  use TypesenseTrait;
 
   /**
    * The Typesense client.
@@ -91,8 +94,9 @@ final class SynonymForm extends FormBase {
     $form['synonym']['id'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Id'),
+      '#description' => $this->t('Unique identifier for the synonym. It cannot contain the / character.'),
       '#required' => TRUE,
-      '#default_value' => $op == 'edit' ? $this->getRequest()->query->get('id') : '',
+      '#default_value' => $op == 'edit' ? $this->getRequest()->query->get('id') : $this->generateUuid(),
       '#disabled' => $op == 'edit',
     ];
 
@@ -185,6 +189,15 @@ final class SynonymForm extends FormBase {
   /**
    * {@inheritdoc}
    */
+  public function validateForm(array &$form, FormStateInterface $form_state): void {
+    if (!$this->checkValidId($form_state->getValue('id'))) {
+      $form_state->setErrorByName('id', $this->t('The id cannot contain the / character.')->render());
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function submitForm(array &$form, FormStateInterface $form_state): void {
     $synonym = [];
 
@@ -204,26 +217,32 @@ final class SynonymForm extends FormBase {
       $synonym['locale'] = $form_state->getValue('locale');
     }
 
-    $response = $this->typesenseClient->createSynonym(
-      $form_state->getValue('index_id'),
-      $form_state->getValue('id'),
-      $synonym,
-    );
-
-    $op = $this->getRequest()->query->get('op') ?? 'add';
-    if ($op == 'edit') {
-      $this->messenger()->addStatus(
-        $this->t('Synonym %id has been updated.', [
-          '%id' => $response['id'],
-        ]),
+    try {
+      $response = $this->typesenseClient->createSynonym(
+        $form_state->getValue('index_id'),
+        $form_state->getValue('id'),
+        $synonym,
       );
+
+      $op = $this->getRequest()->query->get('op') ?? 'add';
+      if ($op == 'edit') {
+        $this->messenger()->addStatus(
+          $this->t('Synonym %id has been updated.', [
+            '%id' => $response['id'],
+          ]),
+        );
+      }
+      else {
+        $this->messenger()->addStatus(
+          $this->t('Synonym %id has been added.', [
+            '%id' => $response['id'],
+          ]),
+        );
+      }
     }
-    else {
-      $this->messenger()->addStatus(
-        $this->t('Synonym %id has been added.', [
-          '%id' => $response['id'],
-        ]),
-          );
+    catch (\Exception $e) {
+      $this->messenger()->addError(
+        $this->t('Something went wrong.'));
     }
 
     $form_state->setRedirect('search_api_typesense.collection.synonyms', [

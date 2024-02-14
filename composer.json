@@ -109,5 +109,8 @@
                 "      composer remove drupal/core-project-message"
             ]
         }
+    },
+    "require-dev": {
+        "phpmd/phpmd": "^2.15"
     }
 }
