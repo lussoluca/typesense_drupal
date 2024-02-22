@@ -34,7 +34,7 @@ search_api_typesense.server.api_keys.delete:
   path: '/admin/config/search/search-api/server/{search_api_server}/api-keys/{id}/delete'
   defaults:
     _title: 'Key Delete'
-    _form: 'Drupal\search_api_typesense\Form\KeyDeleteForm'
+    _form: 'Drupal\search_api_typesense\Form\ApiKeyDeleteForm'
   options:
     parameters:
       search_api_server:

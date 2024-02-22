@@ -49,13 +49,6 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
   protected array $indexes;
 
   /**
-   * The set of Typesense collections on this server.
-   *
-   * @var array
-   */
-  protected array $collections;
-
-  /**
    * @var \Drupal\search_api_typesense\Api\TypesenseClientInterface|null
    */
   private ?TypesenseClientInterface $typesense = NULL;
@@ -106,7 +99,6 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
 
     try {
       $this->typesense = new TypesenseClient($this->getClientConfiguration(FALSE));
-      $this->collections = $this->typesense->retrieveCollections();
       $this->syncIndexesAndCollections();
     }
     catch (SearchApiTypesenseException $e) {
@@ -151,7 +143,7 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
       $num = 1;
       foreach ($this->indexes as $index) {
         $collection_name = $this->getCollectionName($index);
-        $collection = $this->typesense->retrieveCollection($collection_name);
+        $collection_info = $this->typesense->retrieveCollectionInfo($collection_name);
 
         $info[] = [
           'label' => $this->t('Typesense collection @num: name', [
@@ -174,16 +166,11 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
           'info' => NULL,
         ];
 
-        if ($collection != NULL) {
-          $collection_created['info'] = date(DATE_ISO8601,
-            $collection->retrieve()['created_at']);
-          $collection_documents['info'] = $collection->retrieve()['num_documents'] > '0'
-            ? number_format($collection->retrieve()['num_documents'])
-            : $this->t('no documents have been indexed');
-        }
-        else {
-          $collection_created['info'] = $this->t('Collection not yet created. Add one or more fields to the index and configure the Typesense Schema processor to create the collection.');
-        }
+        $collection_created['info'] = date(DATE_ATOM,
+          $collection_info['created_at']);
+        $collection_documents['info'] = $collection_info['num_documents'] > '0'
+          ? number_format($collection_info['num_documents'])
+          : $this->t('no documents have been indexed');
 
         $info[] = $collection_created;
         $info[] = $collection_documents;
@@ -232,7 +219,7 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
           return is_numeric($key);
         }, ARRAY_FILTER_USE_KEY),
         retry_interval_seconds: intval($config['retry_interval_seconds']),
-        http_client: $this->httpClient,
+        http_client           : $this->httpClient,
       );
     }
 
@@ -295,7 +282,7 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
         }
 
         // Check to see if the collection corresponding to this index exists.
-        $collection = $this->typesense->retrieveCollection($typesense_schema['name']);
+        $collection = $this->typesense->retrieveCollectionInfo($typesense_schema['name']);
 
         // If it doesn't, create it.
         if ($collection == NULL) {
@@ -497,7 +484,7 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
   /**
    * {@inheritdoc}
    */
-  public function removeIndex(/* IndexInterface $index */$index): void {
+  public function removeIndex(/* IndexInterface $index */ $index): void {
     try {
       $this->typesense->dropCollection($index->id());
     }
@@ -581,7 +568,6 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
       foreach ($item_ids as $item_id) {
         $this->typesense->deleteDocument($collection, $item_id);
       }
-
     }
     catch (SearchApiTypesenseException $e) {
       $this->logger->error($e->getMessage());
@@ -712,7 +698,18 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
    * {@inheritdoc}
    */
   public function search(QueryInterface $query): void {
-    // Will use $this->typesense->searchDocuments();
+    // For query tagged with `server_index_status` the only thing we need to do
+    // is to retrieve the number of documents in the collection.
+    if ($query->hasTag('server_index_status')) {
+      $collection = $this->getCollectionName($query->getIndex());
+      if ($collection == NULL) {
+        return;
+      }
+
+      $info = $this->typesense->retrieveCollectionInfo($collection);
+      $results = $query->getResults();
+      $results->setResultCount($info['num_documents']);
+    }
   }
 
   /**

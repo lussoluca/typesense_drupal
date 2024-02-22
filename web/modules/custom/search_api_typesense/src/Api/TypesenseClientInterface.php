@@ -29,21 +29,6 @@ interface TypesenseClientInterface {
   public function searchDocuments(string $collection_name, array $parameters): array;
 
   /**
-   * Gets a Typesense collection.
-   *
-   * @param string $collection_name
-   *   The name of the collection to retrieve.
-   *
-   * @return \Typesense\Collection|null
-   *   The collection, or NULL if none was found.
-   *
-   * @see https://typesense.org/docs/latest/api/collections.html#retrieve-a-collection
-   *
-   * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
-   */
-  public function retrieveCollection(string $collection_name): ?Collection;
-
-  /**
    * Creates a Typesense collection.
    *
    * @param array $schema
@@ -102,14 +87,14 @@ interface TypesenseClientInterface {
    * @param string $id
    *   The id of the document to retrieve.
    *
-   * @return array|null
+   * @return array
    *   The retrieved document.
    *
    * @see https://typesense.org/docs/latest/api/documents.html#retrieve-a-document
    *
    * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
    */
-  public function retrieveDocument(string $collection_name, string $id): array|null;
+  public function retrieveDocument(string $collection_name, string $id): array;
 
   /**
    * Deletes a specific indexed document.
@@ -284,6 +269,19 @@ interface TypesenseClientInterface {
   public function deleteCuration(string $collection_name, string $id): array;
 
   /**
+   * Returns collection information.
+   *
+   * @param string $collection_name
+   *   The name of the collection to retrieve information for.
+   *
+   * @return array
+   *   An associative array containing the collection's information.
+   *
+   * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
+   */
+  public function retrieveCollectionInfo(string $collection_name): array;
+
+  /**
    * Returns the health of the Typesense server.
    *
    * @return array
@@ -367,6 +365,19 @@ interface TypesenseClientInterface {
    * @see https://typesense.org/docs/latest/api/api-keys.html#delete-api-key
    */
   public function deleteKey(int $key_id): array;
+
+  /**
+   * Export the collection configuration.
+   *
+   * @param string $collection_name
+   *   The name of the collection to export.
+   *
+   * @return array
+   *   The collection configuration.
+   *
+   * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
+   */
+  public function exportCollectionConfiguration(string $collection_name): array;
 
   /**
    * Prepares items for typesense-indexing.
