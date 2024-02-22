@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Drupal\search_api_typesense\Form;
 
@@ -61,7 +61,7 @@ class ApiKeysForm extends FormBase {
     $documentation_link = Link::fromTextAndUrl(
       $this->t('documentation'),
       Url::fromUri(
-        'https://typesense.org/docs/0.21.0/api/api-keys.html#create-an-api-key',
+        'https://typesense.org/docs/latest/api/api-keys.html#create-an-api-key',
         [
           'attributes' => [
             'target' => '_blank',

@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Drupal\search_api_typesense\Api;
 
@@ -22,7 +22,7 @@ interface TypesenseClientInterface {
    * @return array
    *   The results array.
    *
-   * @see https://typesense.org/docs/0.19.0/api/documents.html#search
+   * @see https://typesense.org/docs/latest/api/documents.html#search
    *
    * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
    */
@@ -37,7 +37,7 @@ interface TypesenseClientInterface {
    * @return \Typesense\Collection|null
    *   The collection, or NULL if none was found.
    *
-   * @see https://typesense.org/docs/0.19.0/api/collections.html#retrieve-a-collection
+   * @see https://typesense.org/docs/latest/api/collections.html#retrieve-a-collection
    *
    * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
    */
@@ -49,7 +49,7 @@ interface TypesenseClientInterface {
    * @param array $schema
    *   A typesense schema.
    *
-   * @see https://typesense.org/docs/0.19.0/api/collections.html#create-a-collection
+   * @see https://typesense.org/docs/latest/api/collections.html#create-a-collection
    *
    * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
    */
@@ -61,7 +61,7 @@ interface TypesenseClientInterface {
    * @param string|null $collection_name
    *   The name of the index to remove.
    *
-   * @see https://typesense.org/docs/0.19.0/api/collections.html#drop-a-collection
+   * @see https://typesense.org/docs/latest/api/collections.html#drop-a-collection
    *
    * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
    */
@@ -73,7 +73,7 @@ interface TypesenseClientInterface {
    * @return array
    *   The set of collections for the server.
    *
-   * @see https://typesense.org/docs/0.19.0/api/collections.html#list-all-collections
+   * @see https://typesense.org/docs/latest/api/collections.html#list-all-collections
    *
    * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
    */
@@ -87,8 +87,8 @@ interface TypesenseClientInterface {
    * @param array $document
    *   The document to create.
    *
-   * @see https://typesense.org/docs/0.19.0/api/documents.html#index-a-document
-   * @see https://typesense.org/docs/0.19.0/api/documents.html#upsert
+   * @see https://typesense.org/docs/latest/api/documents.html#index-a-document
+   * @see https://typesense.org/docs/latest/api/documents.html#upsert
    *
    * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
    */
@@ -105,7 +105,7 @@ interface TypesenseClientInterface {
    * @return array|null
    *   The retrieved document.
    *
-   * @see https://typesense.org/docs/0.19.0/api/documents.html#retrieve-a-document
+   * @see https://typesense.org/docs/latest/api/documents.html#retrieve-a-document
    *
    * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
    */
@@ -122,7 +122,7 @@ interface TypesenseClientInterface {
    * @return array
    *   The deleted document.
    *
-   * @see https://typesense.org/docs/0.19.0/api/documents.html#delete-documents
+   * @see https://typesense.org/docs/latest/api/documents.html#delete-documents
    *
    * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
    */
@@ -139,7 +139,7 @@ interface TypesenseClientInterface {
    * @return array
    *   An array containing the quantity of documents deleted.
    *
-   * @see https://typesense.org/docs/0.19.0/api/documents.html#delete-by-query
+   * @see https://typesense.org/docs/latest/api/documents.html#delete-by-query
    *
    * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
    */
@@ -158,9 +158,9 @@ interface TypesenseClientInterface {
    * @return array
    *   The newly added/updated synonym.
    *
-   * @see https://typesense.org/docs/0.20.0/api/synonyms.html#create-or-update-a-synonym
-   * @see https://typesense.org/docs/0.20.0/api/synonyms.html#multi-way-synonym
-   * @see https://typesense.org/docs/0.20.0/api/synonyms.html#arguments
+   * @see https://typesense.org/docs/latest/api/synonyms.html#create-or-update-a-synonym
+   * @see https://typesense.org/docs/latest/api/synonyms.html#multi-way-synonym
+   * @see https://typesense.org/docs/latest/api/synonyms.html#arguments
    *
    * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
    */
@@ -177,7 +177,7 @@ interface TypesenseClientInterface {
    * @return array
    *   The retrieved synonym.
    *
-   * @see https://typesense.org/docs/0.20.0/api/synonyms.html#retrieve-a-synonym
+   * @see https://typesense.org/docs/latest/api/synonyms.html#retrieve-a-synonym
    *
    * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
    */
@@ -192,7 +192,7 @@ interface TypesenseClientInterface {
    * @return array
    *   The retrieved synonyms.
    *
-   * @see https://typesense.org/docs/0.20.0/api/synonyms.html#list-all-synonyms
+   * @see https://typesense.org/docs/latest/api/synonyms.html#list-all-synonyms
    *
    * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
    */
@@ -209,11 +209,79 @@ interface TypesenseClientInterface {
    * @return array
    *   The deleted synonym.
    *
-   * @see https://typesense.org/docs/0.20.0/api/synonyms.html#delete-a-synonym
+   * @see https://typesense.org/docs/latest/api/synonyms.html#delete-a-synonym
    *
    * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
    */
   public function deleteSynonym(string $collection_name, string $id): array;
+
+  /**
+   * Adds a curation to a collection, or updates an existing curation.
+   *
+   * @param string $collection_name
+   *   The collection to create the new synonym on.
+   * @param string $id
+   *   The id of the synonym to create.
+   * @param array $curation
+   *   The curation to create.
+   *
+   * @return array
+   *   The newly added/updated curation.
+   *
+   * @see https://typesense.org/docs/latest/api/curation.html#create-or-update-an-override
+   *
+   * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
+   */
+  public function createCuration(string $collection_name, string $id, array $curation): array;
+
+  /**
+   * Retrieves a specific curation.
+   *
+   * @param string $collection_name
+   *   The name of the collection to query for the curation.
+   * @param string $id
+   *   The id of the curation to retrieve.
+   *
+   * @return array
+   *   The retrieved curation.
+   *
+   * @see https://typesense.org/docs/latest/api/curation.html#retrieve-an-override
+   *
+   * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
+   */
+  public function retrieveCuration(string $collection_name, string $id): array;
+
+  /**
+   * Retrieves all curations.
+   *
+   * @param string $collection_name
+   *   The name of the collection to query for the curation.
+   *
+   * @return array
+   *   The retrieved curations.
+   *
+   * @see https://typesense.org/docs/latest/api/curation.html#list-all-overrides
+   *
+   * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
+   */
+  public function retrieveCurations(string $collection_name): array;
+
+  /**
+   * Deletes a specific curation.
+   *
+   * @param string $collection_name
+   *   The name of the collection containing the curation.
+   * @param string $id
+   *   The id of the curation to delete.
+   *
+   * @return array
+   *   The deleted curation.
+   *
+   * @see https://typesense.org/docs/latest/api/curation.html#delete-an-override
+   *
+   * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
+   */
+  public function deleteCuration(string $collection_name, string $id): array;
 
   /**
    * Returns the health of the Typesense server.
@@ -266,7 +334,7 @@ interface TypesenseClientInterface {
    *
    * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
    *
-   * @see https://typesense.org/docs/0.25.2/api/api-keys.html#create-an-api-key
+   * @see https://typesense.org/docs/latest/api/api-keys.html#create-an-api-key
    */
   public function createKey(array $schema): array;
 
@@ -281,7 +349,7 @@ interface TypesenseClientInterface {
    *
    * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
    *
-   * @see https://typesense.org/docs/0.25.2/api/api-keys.html#retrieve-an-api-key
+   * @see https://typesense.org/docs/latest/api/api-keys.html#retrieve-an-api-key
    */
   public function retrieveKey(int $key_id): array;
 
@@ -296,7 +364,7 @@ interface TypesenseClientInterface {
    *
    * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
    *
-   * @see https://typesense.org/docs/0.25.2/api/api-keys.html#delete-api-key
+   * @see https://typesense.org/docs/latest/api/api-keys.html#delete-api-key
    */
   public function deleteKey(int $key_id): array;
 

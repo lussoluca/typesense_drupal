@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Drupal\search_api_typesense\Plugin\search_api\processor;
 
@@ -93,7 +93,7 @@ class TypesenseSchema extends FieldsProcessorPluginBase {
       '#type' => 'textfield',
       '#title' => $this->t('Default sorting field'),
       '#description' => $this->t('This field will be used to sort results by default. See the <a href=":typesense_api">Typesense API</a> for more information.', [
-        ':typesense_api' => 'https://typesense.org/docs/0.21.0/guide/ranking-and-relevance.html#default-ranking-order',
+        ':typesense_api' => 'https://typesense.org/docs/latest/guide/ranking-and-relevance.html#default-ranking-order',
       ]),
       '#default_value' => $this->configuration['schema']['default_sorting_field'] ?? NULL,
     ];

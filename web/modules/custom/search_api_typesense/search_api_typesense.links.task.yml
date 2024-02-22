@@ -15,3 +15,9 @@ search_api_typesense.collection.synonyms:
   base_route: entity.search_api_index.canonical
   title: 'Synonyms'
   weight: 20
+
+search_api_typesense.collection.curations:
+  route_name: search_api_typesense.collection.curations
+  base_route: entity.search_api_index.canonical
+  title: 'Curations'
+  weight: 30

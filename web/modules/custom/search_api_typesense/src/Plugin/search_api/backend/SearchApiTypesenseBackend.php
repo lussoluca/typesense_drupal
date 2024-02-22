@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Drupal\search_api_typesense\Plugin\search_api\backend;
 
@@ -16,6 +16,7 @@ use Drupal\search_api_typesense\Api\Config;
 use Drupal\search_api_typesense\Api\SearchApiTypesenseException;
 use Drupal\search_api_typesense\Api\TypesenseClient;
 use Drupal\search_api_typesense\Api\TypesenseClientInterface;
+use Psr\Http\Client\ClientInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -76,8 +77,8 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
    *   The config factory.
    * @param \Drupal\Core\Messenger\MessengerInterface|null $messenger
    *   The messenger.
-   *
-   * @throws \Http\Client\Exception
+   * @param \Psr\Http\Client\ClientInterface $httpClient
+   *   Drupal HTTP client.
    */
   final public function __construct(
     array $configuration,
@@ -87,6 +88,7 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
     protected $fieldsHelper,
     private readonly ConfigFactoryInterface $configFactory,
     protected $messenger,
+    private readonly ClientInterface $httpClient,
   ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
 
@@ -131,6 +133,7 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
       $container->get('search_api.fields_helper'),
       $container->get('config.factory'),
       $container->get('messenger'),
+      $container->get('http_client'),
     );
   }
 
@@ -229,6 +232,7 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
           return is_numeric($key);
         }, ARRAY_FILTER_USE_KEY),
         retry_interval_seconds: intval($config['retry_interval_seconds']),
+        http_client: $this->httpClient,
       );
     }
 
@@ -493,19 +497,14 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
   /**
    * {@inheritdoc}
    */
-  public function removeIndex($index): void {
-    $collection = $this->getCollectionName($index);
-    if ($collection == NULL) {
-      return;
-    }
-
+  public function removeIndex(/* IndexInterface $index */$index): void {
     try {
-      $this->typesense->dropCollection($collection);
+      $this->typesense->dropCollection($index->id());
     }
     catch (SearchApiTypesenseException $e) {
       $this->logger->error($e->getMessage());
       $this->messenger()->addError($this->t('Unable to remove index @index.', [
-        '@index' => $collection,
+        '@index' => $index->id(),
       ]));
     }
   }
@@ -607,7 +606,7 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
       // delete ALL items is to reindex which, in the case of Typesense, means
       // we are probably also changing the collection schema (which requires
       // deleting it) anyway.
-      $this->removeIndex($index->id());
+      $this->removeIndex($index);
       $this->syncIndexesAndCollections();
     }
     catch (SearchApiTypesenseException $e) {

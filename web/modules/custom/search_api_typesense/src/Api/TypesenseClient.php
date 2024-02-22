@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Drupal\search_api_typesense\Api;
 
@@ -8,6 +8,7 @@ use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Http\Client\Exception;
 use Typesense\Client;
 use Typesense\Collection;
+use Typesense\Exceptions\TypesenseClientError;
 
 /**
  * The Search Api Typesense client.
@@ -25,14 +26,13 @@ class TypesenseClient implements TypesenseClientInterface {
    *   The Typesense config.
    *
    * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
-   * @throws \Http\Client\Exception
    */
   public function __construct(Config $config) {
     try {
       $this->client = new Client($config->toArray());
       $this->client->health->retrieve();
     }
-    catch (\Exception $e) {
+    catch (Exception | TypesenseClientError $e) {
       throw new SearchApiTypesenseException($e->getMessage(), $e->getCode(), $e);
     }
   }
@@ -54,7 +54,7 @@ class TypesenseClient implements TypesenseClientInterface {
 
       return [];
     }
-    catch (\Exception $e) {
+    catch (Exception | TypesenseClientError $e) {
       throw new SearchApiTypesenseException($e->getMessage(), $e->getCode(), $e);
     }
   }
@@ -71,7 +71,7 @@ class TypesenseClient implements TypesenseClientInterface {
 
       return $collection;
     }
-    catch (\Exception $e) {
+    catch (Exception | TypesenseClientError $e) {
       return NULL;
     }
   }
@@ -83,10 +83,7 @@ class TypesenseClient implements TypesenseClientInterface {
     try {
       $this->client->collections->create($schema);
     }
-    catch (\Exception $e) {
-      throw new SearchApiTypesenseException($e->getMessage(), $e->getCode(), $e);
-    }
-    catch (Exception $e) {
+    catch (Exception | TypesenseClientError $e) {
       throw new SearchApiTypesenseException($e->getMessage(), $e->getCode(), $e);
     }
 
@@ -103,7 +100,7 @@ class TypesenseClient implements TypesenseClientInterface {
         $collections[$collection_name]->delete();
       }
     }
-    catch (\Exception $e) {
+    catch (Exception | TypesenseClientError $e) {
       throw new SearchApiTypesenseException($e->getMessage(), $e->getCode(), $e);
     }
   }
@@ -115,7 +112,7 @@ class TypesenseClient implements TypesenseClientInterface {
     try {
       return $this->client->collections->retrieve();
     }
-    catch (\Exception $e) {
+    catch (Exception | TypesenseClientError $e) {
       throw new SearchApiTypesenseException($e->getMessage(), $e->getCode(), $e);
     }
   }
@@ -131,7 +128,7 @@ class TypesenseClient implements TypesenseClientInterface {
         $this->client->collections[$collection_name]->documents->upsert($document);
       }
     }
-    catch (\Exception $e) {
+    catch (Exception | TypesenseClientError $e) {
       throw new SearchApiTypesenseException($e->getMessage(), $e->getCode(), $e);
     }
   }
@@ -149,7 +146,7 @@ class TypesenseClient implements TypesenseClientInterface {
 
       return NULL;
     }
-    catch (\Exception $e) {
+    catch (Exception | TypesenseClientError $e) {
       return NULL;
     }
   }
@@ -173,7 +170,7 @@ class TypesenseClient implements TypesenseClientInterface {
 
       return [];
     }
-    catch (\Exception $e) {
+    catch (Exception | TypesenseClientError $e) {
       throw new SearchApiTypesenseException($e->getMessage(), $e->getCode(), $e);
     }
   }
@@ -191,7 +188,7 @@ class TypesenseClient implements TypesenseClientInterface {
 
       return [];
     }
-    catch (\Exception $e) {
+    catch (Exception | TypesenseClientError $e) {
       throw new SearchApiTypesenseException($e->getMessage(), $e->getCode(), $e);
     }
   }
@@ -209,7 +206,7 @@ class TypesenseClient implements TypesenseClientInterface {
 
       return [];
     }
-    catch (\Exception $e) {
+    catch (Exception | TypesenseClientError $e) {
       throw new SearchApiTypesenseException($e->getMessage(), $e->getCode(), $e);
     }
   }
@@ -227,7 +224,7 @@ class TypesenseClient implements TypesenseClientInterface {
 
       return [];
     }
-    catch (\Exception $e) {
+    catch (Exception | TypesenseClientError $e) {
       throw new SearchApiTypesenseException($e->getMessage(), $e->getCode(), $e);
     }
   }
@@ -245,7 +242,7 @@ class TypesenseClient implements TypesenseClientInterface {
 
       return [];
     }
-    catch (\Exception $e) {
+    catch (Exception | TypesenseClientError $e) {
       throw new SearchApiTypesenseException($e->getMessage(), $e->getCode(), $e);
     }
   }
@@ -263,7 +260,83 @@ class TypesenseClient implements TypesenseClientInterface {
 
       return [];
     }
-    catch (\Exception $e) {
+    catch (Exception | TypesenseClientError $e) {
+      throw new SearchApiTypesenseException($e->getMessage(), $e->getCode(), $e);
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function createCuration(
+    string $collection_name,
+    string $id,
+    array $curation,
+  ): array {
+    try {
+      $collection = $this->retrieveCollection($collection_name);
+
+      if ($collection != NULL) {
+        return $this->client->collections[$collection_name]->overrides->upsert($id, $curation);
+      }
+
+      return [];
+    }
+    catch (Exception | TypesenseClientError $e) {
+      throw new SearchApiTypesenseException($e->getMessage(), $e->getCode(), $e);
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function retrieveCuration(string $collection_name, string $id): array {
+    try {
+      $collection = $this->retrieveCollection($collection_name);
+
+      if ($collection != NULL) {
+        return $collection->overrides[$id]->retrieve();
+      }
+
+      return [];
+    }
+    catch (Exception | TypesenseClientError $e) {
+      throw new SearchApiTypesenseException($e->getMessage(), $e->getCode(), $e);
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function retrieveCurations(string $collection_name): array {
+    try {
+      $collection = $this->retrieveCollection($collection_name);
+
+      if ($collection != NULL) {
+        return $collection->overrides->retrieve();
+      }
+
+      return [];
+    }
+    catch (Exception | TypesenseClientError $e) {
+      throw new SearchApiTypesenseException($e->getMessage(), $e->getCode(), $e);
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function deleteCuration(string $collection_name, string $id): array {
+    try {
+      $collection = $this->retrieveCollection($collection_name);
+
+      if ($collection != NULL) {
+        return $collection->overrides[$id]->delete();
+      }
+
+      return [];
+    }
+    catch (Exception | TypesenseClientError $e) {
       throw new SearchApiTypesenseException($e->getMessage(), $e->getCode(), $e);
     }
   }
@@ -275,7 +348,7 @@ class TypesenseClient implements TypesenseClientInterface {
     try {
       return $this->client->health->retrieve();
     }
-    catch (\Exception $e) {
+    catch (Exception | TypesenseClientError $e) {
       throw new SearchApiTypesenseException($e->getMessage(), $e->getCode(), $e);
     }
   }
@@ -287,7 +360,7 @@ class TypesenseClient implements TypesenseClientInterface {
     try {
       return $this->client->debug->retrieve();
     }
-    catch (\Exception $e) {
+    catch (Exception | TypesenseClientError $e) {
       throw new SearchApiTypesenseException($e->getMessage(), $e->getCode(), $e);
     }
   }
@@ -299,7 +372,7 @@ class TypesenseClient implements TypesenseClientInterface {
     try {
       return $this->client->metrics->retrieve();
     }
-    catch (\Exception $e) {
+    catch (Exception | TypesenseClientError $e) {
       throw new SearchApiTypesenseException($e->getMessage(), $e->getCode(), $e);
     }
   }
@@ -311,7 +384,7 @@ class TypesenseClient implements TypesenseClientInterface {
     try {
       return $this->client->getKeys()->retrieve();
     }
-    catch (SearchApiTypesenseException $e) {
+    catch (Exception | TypesenseClientError $e) {
       throw new SearchApiTypesenseException($e->getMessage(), $e->getCode(), $e);
     }
   }
@@ -323,7 +396,7 @@ class TypesenseClient implements TypesenseClientInterface {
     try {
       return $this->client->keys->create($schema);
     }
-    catch (\Exception | Exception $e) {
+    catch (Exception | TypesenseClientError $e) {
       throw new SearchApiTypesenseException($e->getMessage(), $e->getCode(), $e);
     }
   }
@@ -337,7 +410,7 @@ class TypesenseClient implements TypesenseClientInterface {
 
       return $key->retrieve();
     }
-    catch (\Exception | Exception $e) {
+    catch (Exception | TypesenseClientError $e) {
       throw new SearchApiTypesenseException($e->getMessage(), $e->getCode(), $e);
     }
   }
@@ -351,7 +424,7 @@ class TypesenseClient implements TypesenseClientInterface {
 
       return $key->delete();
     }
-    catch (\Exception | Exception $e) {
+    catch (Exception | TypesenseClientError $e) {
       throw new SearchApiTypesenseException($e->getMessage(), $e->getCode(), $e);
     }
   }
@@ -374,9 +447,9 @@ class TypesenseClient implements TypesenseClientInterface {
       // TypeSense does not allow characters that require encoding in urls. The
       // Search API ID has "/" character in it that is not compatible with that
       // requirement. So replace that with an underscore.
-      // @see https://typesense.org/docs/0.21.0/api/documents.html#index-a-document.
+      // @see https://typesense.org/docs/latest/api/documents.html#index-a-document.
       case 'typesense_id':
-        $value = \str_replace('/', '_', $value);
+        $value = \str_replace('/', '-', $value);
         break;
 
       case 'typesense_bool':

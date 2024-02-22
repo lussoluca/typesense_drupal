@@ -1,8 +1,10 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Drupal\search_api_typesense\Api;
+
+use Psr\Http\Client\ClientInterface;
 
 /**
  * The Search Api Typesense client factory.
@@ -18,11 +20,14 @@ class Config {
    *   The Typesense nodes.
    * @param int $retry_interval_seconds
    *   The Typesense retry interval in seconds.
+   * @param \Psr\Http\Client\ClientInterface $http_client
+   *   Drupal HTTP client.
    */
   public function __construct(
     public readonly string $api_key,
     public readonly array $nodes,
-    public readonly int $retry_interval_seconds
+    public readonly int $retry_interval_seconds,
+    public readonly ClientInterface $http_client,
   ) {}
 
   /**
@@ -36,6 +41,7 @@ class Config {
       'api_key' => $this->api_key,
       'nodes' => $this->nodes,
       'retry_interval_seconds' => $this->retry_interval_seconds,
+      'client' => $this->http_client,
     ];
   }
 

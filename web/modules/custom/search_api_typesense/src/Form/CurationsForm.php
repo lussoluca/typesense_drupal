@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Drupal\search_api_typesense\Form;
 
@@ -14,9 +14,9 @@ use Drupal\search_api_typesense\Plugin\search_api\backend\SearchApiTypesenseBack
 use Drupal\search_api_typesense\TypesenseTrait;
 
 /**
- * Manage the synonyms.
+ * Manage the curations.
  */
-final class SynonymForm extends FormBase {
+final class CurationsForm extends FormBase {
 
   use TypesenseTrait;
 
@@ -31,7 +31,7 @@ final class SynonymForm extends FormBase {
    * {@inheritdoc}
    */
   public function getFormId(): string {
-    return 'search_api_typesense_synonym';
+    return 'search_api_typesense_curations';
   }
 
   /**
@@ -43,7 +43,7 @@ final class SynonymForm extends FormBase {
   public function buildForm(
     array $form,
     FormStateInterface $form_state,
-    ?IndexInterface $search_api_index = NULL
+    ?IndexInterface $search_api_index = NULL,
   ): array {
     $search_api_server = $search_api_index->getServerInstance();
     $backend = $search_api_server->getBackend();
@@ -59,11 +59,13 @@ final class SynonymForm extends FormBase {
       return $form;
     }
 
+    $form['#title'] = $this->t('Manage curations for search index %label', ['%label' => $search_api_index->label()]);
+
     $this->typesenseClient = $backend->getTypesense();
     $documentation_link = Link::fromTextAndUrl(
       $this->t('documentation'),
       Url::fromUri(
-        'https://typesense.org/docs/0.25.2/api/synonyms.html#create-or-update-a-synonym',
+        'https://typesense.org/docs/latest/api/curation.html',
         [
           'attributes' => [
             'target' => '_blank',
@@ -73,84 +75,77 @@ final class SynonymForm extends FormBase {
     );
 
     $op = $this->getRequest()->query->get('op') ?? 'add';
-    $synonym = NULL;
+    $curation = NULL;
     if ($op == 'edit') {
-      $synonym = $this->typesenseClient->retrieveSynonym(
+      $curation = $this->typesenseClient->retrieveCuration(
         $search_api_index->id(),
         $this->getRequest()->query->get('id'),
       );
     }
 
-    $synonyms = $this->typesenseClient->retrieveSynonyms($search_api_index->id());
-    $form['synonym'] = [
+    $curations = $this->typesenseClient->retrieveCurations($search_api_index->id());
+    $form['curation'] = [
       '#type' => 'details',
-      '#title' => $op == 'edit' ? $this->t('Edit synonym') : $this->t('Add synonym'),
+      '#title' => $op == 'edit' ? $this->t('Edit curation') : $this->t('Add curation'),
       '#description' => $this->t('See the @link for more information.', [
         '@link' => $documentation_link->toString(),
       ]),
-      '#open' => !(count($synonyms['synonyms']) > 0) || $op == 'edit',
+      '#open' => !(count($curations['overrides']) > 0) || $op == 'edit',
     ];
 
-    $form['synonym']['id'] = [
+    $form['curation']['id'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Id'),
-      '#description' => $this->t('Unique identifier for the synonym. It cannot contain the / character.'),
+      '#description' => $this->t('Unique identifier for the curation. It cannot contain the / character.'),
       '#required' => TRUE,
       '#default_value' => $op == 'edit' ? $this->getRequest()->query->get('id') : $this->generateUuid(),
       '#disabled' => $op == 'edit',
     ];
 
-    $default_type = 'one_way';
-    if ($op == 'edit') {
-      if ($synonym['root'] == '') {
-        $default_type = 'multi_way';
-      }
-    }
-    $form['synonym']['type'] = [
+    $form['curation']['query'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Query'),
+      '#default_value' => $op == 'edit' ? $curation['query'] : '',
+    ];
+
+    $form['curation']['match'] = [
       '#type' => 'select',
-      '#title' => $this->t('Type'),
+      '#title' => $this->t('Match'),
       '#options' => [
-        'one_way' => $this->t('One-way'),
-        'multi_way' => $this->t('Multi-way'),
+        'exact' => $this->t('Exact'),
+        'contains' => $this->t('Contains'),
       ],
-      '#default_value' => $op == 'edit' ? $default_type : 'one_way',
+      '#default_value' => $op == 'edit' ? $curation['match'] : '',
     ];
 
-    $form['synonym']['root'] = [
+    $form['curation']['includes'] = [
       '#type' => 'textfield',
-      '#title' => $this->t('Root'),
-      '#description' => $this->t('For 1-way synonyms, indicates the root word that words in the synonyms parameter map to.'),
-      '#default_value' => $op == 'edit' ? $synonym['root'] : '',
-      '#states' => [
-        'visible' => [
-          ':input[name="type"]' => ['value' => 'one_way'],
-        ],
-        'required' => [
-          ':input[name="type"]' => ['value' => 'one_way'],
-        ],
-      ],
+      '#title' => $this->t('Includes'),
+      '#default_value' => $op == 'edit' ? $curation['includes'] : '',
     ];
 
-    $form['synonym']['synonyms'] = [
+    $form['curation']['excludes'] = [
       '#type' => 'textfield',
-      '#title' => $this->t('Synonyms'),
-      '#description' => $this->t('List of words that should be considered as synonyms. Separate words with comma.'),
-      '#default_value' => $op == 'edit' ? implode(',', $synonym['synonyms']) : '',
-      '#required' => TRUE,
+      '#title' => $this->t('Excludes'),
+      '#default_value' => $op == 'edit' ? $curation['excludes'] : '',
     ];
 
-    $form['synonym']['symbols_to_index'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('Symbols to index'),
-      '#description' => $this->t('By default, special characters are dropped from synonyms. Use this attribute to specify which special characters should be indexed as is.'),
-      '#default_value' => $op == 'edit' && array_key_exists('symbols_to_index', $synonym) ? implode(',', $synonym['symbols_to_index']) : '',
+    $form['curation']['filter_curated_hits'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Filter curated hits'),
+      '#default_value' => $op == 'edit' ? $curation['filter_curated_hits'] : FALSE,
     ];
 
-    $form['synonym']['locale'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('Locale'),
-      '#description' => $this->t('Locale for the synonym, leave blank to use the standard tokenizer.'),
-      '#default_value' => $op == 'edit'  && array_key_exists('locale', $synonym) ? $synonym['locale'] : '',
+    $form['curation']['remove_matched_tokens'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Remove matched tokens'),
+      '#default_value' => $op == 'edit' ? $curation['remove_matched_tokens'] : FALSE,
+    ];
+
+    $form['curation']['stop_processing'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Stop processing'),
+      '#default_value' => $op == 'edit' ? $curation['stop_processing'] : TRUE,
     ];
 
     $form['index_id'] = [
@@ -158,7 +153,7 @@ final class SynonymForm extends FormBase {
       '#value' => $search_api_index->id(),
     ];
 
-    $form['synonym']['operations'] = [
+    $form['curation']['operations'] = [
       '#type' => 'actions',
       'submit' => [
         '#type' => 'submit',
@@ -167,11 +162,11 @@ final class SynonymForm extends FormBase {
     ];
 
     if ($op == 'edit') {
-      $form['synonym']['operations']['cancel'] = [
+      $form['curation']['operations']['cancel'] = [
         '#type' => 'link',
         '#title' => $this->t('Cancel'),
         '#url' => Url::fromRoute(
-          'search_api_typesense.collection.synonyms', [
+          'search_api_typesense.collection.curations', [
             'search_api_index' => $search_api_index->id(),
           ],
         ),
@@ -181,7 +176,7 @@ final class SynonymForm extends FormBase {
       ];
     }
 
-    $form['existing_synonyms']['list'] = $this->buildExistingSynonymsTable($synonyms, $search_api_index->id());
+    $form['existing_curations']['list'] = $this->buildExistingCurationsTable($curations, $search_api_index->id());
 
     return $form;
   }
@@ -251,41 +246,46 @@ final class SynonymForm extends FormBase {
   }
 
   /**
-   * Builds the existing keys table.
+   * Builds the existing curations table.
    *
-   * @param array $synonyms
-   *   The existing synonyms.
+   * @param array $curations
+   *   The existing curations.
    * @param string $index_id
    *   The index ID.
    *
    * @return array
-   *   The existing keys table.
+   *   The existing curations table.
    */
-  protected function buildExistingSynonymsTable(array $synonyms, string $index_id): array {
+  protected function buildExistingCurationsTable(array $curations, string $index_id): array {
     $table = [
       '#type' => 'table',
-      '#caption' => $this->t('Existing synonyms'),
+      '#caption' => $this->t('Existing curations'),
       '#header' => [
         $this->t('ID'),
-        $this->t('Type'),
-        $this->t('Root'),
-        $this->t('Synonyms'),
-        $this->t('Symbols to index'),
-        $this->t('Locale'),
+        $this->t('Query'),
+        $this->t('Match'),
+        $this->t('Includes'),
+        $this->t('Excludes'),
+        $this->t('Filter curated hits'),
+        $this->t('Remove matched tokens'),
+        $this->t('Stop processing'),
         $this->t('Operations'),
       ],
-      '#empty' => $this->t('No synonyms found.'),
+      '#empty' => $this->t('No curations found.'),
     ];
 
     $rows = [];
-    foreach ($synonyms['synonyms'] as $key => $value) {
+    foreach ($curations['overrides'] as $key => $value) {
       $rows[$key] = [
         'id' => $value['id'],
-        'type' => $value['root'] == '' ? $this->t('Multi-way') : $this->t('One-way'),
-        'root' => $value['root'],
-        'synonyms' => implode(', ', $value['synonyms']),
-        'symbols_to_index' => array_key_exists('symbols_to_index', $value) ? implode(', ', $value['symbols_to_index']) : '',
-        'locale'  => array_key_exists('locale', $value) ? $value['locale'] : '',
+        'query' => $value['rule']['query'],
+        'match' => $value['rule']['match'],
+        'includes' => '',
+        'excludes' => '',
+        'filter_curated_hits' => $value['filter_curated_hits'] == 1 ? $this->t('Yes') : $this->t('No'),
+        'remove_matched_tokens' => $value['remove_matched_tokens'] == 1 ? $this->t('Yes') : $this->t('No'),
+        'stop_processing' => $value['stop_processing'] == 1 ? $this->t('Yes') : $this->t('No'),
+
         'operations' => [
           'data' => [
             '#type' => 'dropbutton',
@@ -295,20 +295,9 @@ final class SynonymForm extends FormBase {
                 'title' => $this
                   ->t('Edit'),
                 'url' => Url::fromRoute(
-                  'search_api_typesense.collection.synonyms', [
+                  'search_api_typesense.collection.curations', [
                     'search_api_index' => $index_id,
                     'op' => 'edit',
-                    'id' => $value['id'],
-
-                  ],
-                ),
-              ],
-              'delete' => [
-                'title' => $this
-                  ->t('Delete'),
-                'url' => Url::fromRoute(
-                  'search_api_typesense.collection.synonyms.delete', [
-                    'search_api_index' => $index_id,
                     'id' => $value['id'],
                   ],
                 ),

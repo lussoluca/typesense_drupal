@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Drupal\search_api_typesense\Form;
 
@@ -16,7 +16,7 @@ use Drupal\search_api_typesense\Plugin\search_api\backend\SearchApiTypesenseBack
 /**
  * Form to delete a key.
  */
-class KeyDeleteForm extends ConfirmFormBase {
+class ApiKeyDeleteForm extends ConfirmFormBase {
 
   /**
    * The Typesense client.
@@ -43,7 +43,7 @@ class KeyDeleteForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function getFormId(): string {
-    return 'search_api_typesense_key_delete';
+    return 'search_api_typesense_api_key_delete';
   }
 
   /**
