@@ -421,14 +421,16 @@ class TypesenseClient implements TypesenseClientInterface {
   /**
    * {@inheritdoc}
    */
-  public function exportCollectionConfiguration(
-    string $collection_name,
-  ): array {
+  public function exportCollection(string $collection_name): array {
     try {
       $collection = $this->retrieveCollection($collection_name);
 
+      $schema = $collection->retrieve();
+      unset($schema['created_at']);
+      unset($schema['num_documents']);
+
       return [
-        'schema' => $collection->retrieve(),
+        'schema' => $schema,
         'synonyms' => $collection->synonyms->retrieve(),
         'curations' => $collection->overrides->retrieve(),
       ];
@@ -449,9 +451,9 @@ class TypesenseClient implements TypesenseClientInterface {
    *   - Equip this function to handle multiples (i.e. int32[] etc).
    */
   public function prepareItemValue(
-    string|int|array|null $value,
+    string | int | array | null $value,
     string $type,
-  ): bool|float|int|string {
+  ): bool | float | int | string {
     if (is_array($value) && count($value) <= 1) {
       $value = reset($value);
     }

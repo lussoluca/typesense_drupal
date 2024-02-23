@@ -367,17 +367,17 @@ interface TypesenseClientInterface {
   public function deleteKey(int $key_id): array;
 
   /**
-   * Export the collection configuration.
+   * Export the collection data.
    *
    * @param string $collection_name
    *   The name of the collection to export.
    *
    * @return array
-   *   The collection configuration.
+   *   The collection data.
    *
    * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
    */
-  public function exportCollectionConfiguration(string $collection_name): array;
+  public function exportCollection(string $collection_name): array;
 
   /**
    * Prepares items for typesense-indexing.
