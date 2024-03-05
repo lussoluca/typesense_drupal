@@ -1,0 +1,21 @@
+<?php
+
+/**
+ * @file
+ * Provides Typesense backend to Search API.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function search_api_typesense_help($route_name, RouteMatchInterface $route_match): string {
+  switch ($route_name) {
+
+    case 'search_api_typesense.collection.export':
+      return '<p>' . t('Export and download the full collection data as a json file.') . '</p>';
+  }
+
+  return '';
+}

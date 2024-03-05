@@ -367,6 +367,18 @@ interface TypesenseClientInterface {
   public function deleteKey(int $key_id): array;
 
   /**
+   * Import the collection data.
+   *
+   * @param string $collection_name
+   *   The name of the collection to import to.
+   * @param array $data
+   *   The collection data.
+   *
+   * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
+   */
+  public function importCollection(string $collection_name, array $data): void;
+
+  /**
    * Export the collection data.
    *
    * @param string $collection_name

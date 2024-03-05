@@ -421,6 +421,27 @@ class TypesenseClient implements TypesenseClientInterface {
   /**
    * {@inheritdoc}
    */
+  public function importCollection(string $collection_name, array $data): void {
+    try {
+      $collection = $this->retrieveCollection($collection_name);
+
+      foreach ($data['synonyms'] as $synonym) {
+        $collection->synonyms->upsert($synonym['id'], $synonym);
+      }
+
+      foreach ($data['curations'] as $curation) {
+        $collection->overrides->upsert($curation['id'], $curation);
+      }
+    }
+    catch (Exception | TypesenseClientError $e) {
+      throw new SearchApiTypesenseException($e->getMessage(), $e->getCode(),
+        $e);
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function exportCollection(string $collection_name): array {
     try {
       $collection = $this->retrieveCollection($collection_name);
@@ -431,8 +452,8 @@ class TypesenseClient implements TypesenseClientInterface {
 
       return [
         'schema' => $schema,
-        'synonyms' => $collection->synonyms->retrieve(),
-        'curations' => $collection->overrides->retrieve(),
+        'synonyms' => $collection->synonyms->retrieve()['synonyms'],
+        'curations' => $collection->overrides->retrieve()['overrides'],
       ];
     }
     catch (Exception | TypesenseClientError $e) {

@@ -12,13 +12,13 @@ use Drupal\search_api_typesense\Plugin\search_api\backend\SearchApiTypesenseBack
 /**
  * Provides a form for exporting a Typesense collection.
  */
-class ExportForm extends FormBase {
+class CollectionExportForm extends FormBase {
 
   /**
    * {@inheritdoc}
    */
   public function getFormId(): string {
-    return 'search_api_typesense_export';
+    return 'search_api_typesense_collection_export';
   }
 
   /**
@@ -47,14 +47,14 @@ class ExportForm extends FormBase {
       $form['#title'] = $this->t('Export index %label',
         ['%label' => $search_api_index->label()]);
 
-      $collection_data = $backend
-        ->getTypesense()
-        ->exportCollection($search_api_index->id());
-      $form['collection_data'] = [
-        '#default_value' => json_encode($collection_data, JSON_PRETTY_PRINT),
-        '#rows' => 50,
-        '#title' => $this->t('Collection data'),
-        '#type' => 'textarea',
+      $form['search_api_index'] = [
+        '#type' => 'hidden',
+        '#value' => $search_api_index->id(),
+      ];
+
+      $form['submit'] = [
+        '#type' => 'submit',
+        '#value' => $this->t('Export'),
       ];
     }
     catch (SearchApiTypesenseException | SearchApiException $e) {
@@ -75,6 +75,11 @@ class ExportForm extends FormBase {
   public function submitForm(
     array &$form,
     FormStateInterface $form_state,
-  ): void {}
+  ): void {
+    $form_state->setRedirect(
+      'search_api_typesense.collection.export_download',
+      ['search_api_index' => $form_state->getValue('search_api_index')],
+    );
+  }
 
 }

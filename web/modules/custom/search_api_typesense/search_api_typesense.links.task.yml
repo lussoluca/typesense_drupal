@@ -22,6 +22,12 @@ search_api_typesense.collection.curations:
   title: 'Curations'
   weight: 30
 
+search_api_typesense.collection.import:
+  route_name: search_api_typesense.collection.import
+  base_route: entity.search_api_index.canonical
+  title: 'Import'
+  weight: 39
+
 search_api_typesense.collection.export:
   route_name: search_api_typesense.collection.export
   base_route: entity.search_api_index.canonical
