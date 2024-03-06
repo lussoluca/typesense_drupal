@@ -541,8 +541,11 @@ class TypesenseClient implements TypesenseClientInterface {
     }
     catch (Exception | TypesenseClientError $e) {
       if ($throw) {
-        throw new SearchApiTypesenseException($e->getMessage(), $e->getCode(),
-          $e);
+        throw new SearchApiTypesenseException(
+          $e->getMessage(),
+          $e->getCode(),
+          $e,
+        );
       }
 
       return NULL;
