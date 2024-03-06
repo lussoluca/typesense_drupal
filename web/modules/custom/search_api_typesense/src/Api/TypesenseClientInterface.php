@@ -274,12 +274,13 @@ interface TypesenseClientInterface {
    * @param string $collection_name
    *   The name of the collection to retrieve information for.
    *
-   * @return array
-   *   An associative array containing the collection's information.
+   * @return array|null
+   *   An associative array containing the collection's information. Or NULL if
+   *   the collection does not exist.
    *
    * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
    */
-  public function retrieveCollectionInfo(string $collection_name): array;
+  public function retrieveCollectionInfo(string $collection_name): array|null;
 
   /**
    * Returns the health of the Typesense server.

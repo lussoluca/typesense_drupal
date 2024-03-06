@@ -592,8 +592,10 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
       // delete ALL items is to reindex which, in the case of Typesense, means
       // we are probably also changing the collection schema (which requires
       // deleting it) anyway.
+      $collection_data = $this->typesense->exportCollection($this->getCollectionName($index));
       $this->removeIndex($index);
       $this->syncIndexesAndCollections();
+      $this->typesense->importCollection($this->getCollectionName($index), $collection_data);
     }
     catch (SearchApiTypesenseException $e) {
       $this->logger->error($e->getMessage());

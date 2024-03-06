@@ -308,13 +308,19 @@ class TypesenseClient implements TypesenseClientInterface {
   /**
    * {@inheritdoc}
    */
-  public function retrieveCollectionInfo(string $collection_name): array {
+  public function retrieveCollectionInfo(string $collection_name): array|null {
     try {
-      $collection = $this->retrieveCollection($collection_name)->retrieve();
+      $collection = $this->retrieveCollection($collection_name, FALSE);
+
+      if ($collection === NULL) {
+        return NULL;
+      }
+
+      $collection_data = $collection->retrieve();
 
       return [
-        'created_at' => $collection['created_at'],
-        'num_documents' => $collection['num_documents'],
+        'created_at' => $collection_data['created_at'],
+        'num_documents' => $collection_data['num_documents'],
       ];
     }
     catch (Exception | TypesenseClientError $e) {
@@ -514,15 +520,17 @@ class TypesenseClient implements TypesenseClientInterface {
    *
    * @param string|null $collection_name
    *   The name of the collection to retrieve.
+   * @param bool $throw
+   *   Whether to throw an exception if the collection is not found.
    *
-   * @return \Typesense\Collection
+   * @return \Typesense\Collection|null
    *   The collection, or NULL if none was found.
    *
-   * @throws \Typesense\Exceptions\TypesenseClientError
+   * @throws \Drupal\search_api_typesense\Api\SearchApiTypesenseException
    *
    * @see https://typesense.org/docs/latest/api/collections.html#retrieve-a-collection
    */
-  private function retrieveCollection(?string $collection_name): Collection {
+  private function retrieveCollection(?string $collection_name, bool $throw = TRUE): ?Collection {
     try {
       $collection = $this->client->collections[$collection_name];
       // Ensure that collection exists on the typesense server by retrieving it.
@@ -532,7 +540,12 @@ class TypesenseClient implements TypesenseClientInterface {
       return $collection;
     }
     catch (Exception | TypesenseClientError $e) {
-      throw new TypesenseClientError($e->getMessage());
+      if ($throw) {
+        throw new SearchApiTypesenseException($e->getMessage(), $e->getCode(),
+          $e);
+      }
+
+      return NULL;
     }
   }
 
