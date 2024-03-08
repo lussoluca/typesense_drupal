@@ -105,7 +105,7 @@ final class CurationsForm extends FormBase {
     $form['curation']['query'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Query'),
-      '#default_value' => $op == 'edit' ? $curation['query'] : '',
+      '#default_value' => $op == 'edit' ? $curation['rule']['query'] : '',
     ];
 
     $form['curation']['match'] = [
@@ -115,19 +115,21 @@ final class CurationsForm extends FormBase {
         'exact' => $this->t('Exact'),
         'contains' => $this->t('Contains'),
       ],
-      '#default_value' => $op == 'edit' ? $curation['match'] : '',
+      '#default_value' => $op == 'edit' ? $curation['rule']['match'] : '',
     ];
 
     $form['curation']['includes'] = [
       '#type' => 'textfield',
+      '#description' => 'Comma separated list of document IDs to include in the search results and its position like "entity:node-9:en/1,entity:node-42:en/3".',
       '#title' => $this->t('Includes'),
-      '#default_value' => $op == 'edit' ? $curation['includes'] : '',
+      '#default_value' => $op == 'edit' ? $this->serializeIncludes($curation['includes']) : '',
     ];
 
     $form['curation']['excludes'] = [
       '#type' => 'textfield',
+      '#description' => 'Comma separated list of document IDs to exclude from the search results like "entity:node-12:en,entity:node-24:en".',
       '#title' => $this->t('Excludes'),
-      '#default_value' => $op == 'edit' ? $curation['excludes'] : '',
+      '#default_value' => $op == 'edit' ? $this->serializeExcludes($curation['excludes']) : '',
     ];
 
     $form['curation']['filter_curated_hits'] = [
@@ -194,42 +196,39 @@ final class CurationsForm extends FormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state): void {
-    $synonym = [];
+    $includes = $this->deserializeIncludes($form_state->getValue('includes'));
+    $excludes = $this->deserializeExcludes($form_state->getValue('excludes'));
 
-    if ($form_state->getValue('type') == 'multi_way') {
-      $synonym['synonyms'] = explode(',', $form_state->getValue('synonyms'));
-    }
-    else {
-      $synonym['root'] = $form_state->getValue('root');
-      $synonym['synonyms'] = explode(',', $form_state->getValue('synonyms'));
-    }
-
-    if ($form_state->getValue('symbols_to_index') != '') {
-      $synonym['symbols_to_index'] = explode(',', $form_state->getValue('symbols_to_index'));
-    }
-
-    if ($form_state->getValue('locale') != '') {
-      $synonym['locale'] = $form_state->getValue('locale');
-    }
+    $curation = [
+      'rule' => [
+        'query' => $form_state->getValue('query'),
+        'match' => $form_state->getValue('match'),
+      ],
+      'includes' => $includes,
+      'excludes' => $excludes,
+      'filter_curated_hits' => (bool) $form_state->getValue('filter_curated_hits'),
+      'remove_matched_tokens' => (bool) $form_state->getValue('remove_matched_tokens'),
+      'stop_processing' => (bool) $form_state->getValue('stop_processing'),
+    ];
 
     try {
-      $response = $this->typesenseClient->createSynonym(
+      $response = $this->typesenseClient->createCuration(
         $form_state->getValue('index_id'),
         $form_state->getValue('id'),
-        $synonym,
+        $curation,
       );
 
       $op = $this->getRequest()->query->get('op') ?? 'add';
       if ($op == 'edit') {
         $this->messenger()->addStatus(
-          $this->t('Synonym %id has been updated.', [
+          $this->t('Curation %id has been updated.', [
             '%id' => $response['id'],
           ]),
         );
       }
       else {
         $this->messenger()->addStatus(
-          $this->t('Synonym %id has been added.', [
+          $this->t('Curation %id has been added.', [
             '%id' => $response['id'],
           ]),
         );
@@ -240,7 +239,7 @@ final class CurationsForm extends FormBase {
         $this->t('Something went wrong.'));
     }
 
-    $form_state->setRedirect('search_api_typesense.collection.synonyms', [
+    $form_state->setRedirect('search_api_typesense.collection.curations', [
       'search_api_index' => $form_state->getValue('index_id'),
     ]);
   }
@@ -280,8 +279,8 @@ final class CurationsForm extends FormBase {
         'id' => $value['id'],
         'query' => $value['rule']['query'],
         'match' => $value['rule']['match'],
-        'includes' => '',
-        'excludes' => '',
+        'includes' => $this->serializeIncludes($value['includes']),
+        'excludes' => $this->serializeExcludes($value['excludes']),
         'filter_curated_hits' => $value['filter_curated_hits'] == 1 ? $this->t('Yes') : $this->t('No'),
         'remove_matched_tokens' => $value['remove_matched_tokens'] == 1 ? $this->t('Yes') : $this->t('No'),
         'stop_processing' => $value['stop_processing'] == 1 ? $this->t('Yes') : $this->t('No'),
@@ -302,6 +301,16 @@ final class CurationsForm extends FormBase {
                   ],
                 ),
               ],
+              'delete' => [
+                'title' => $this
+                  ->t('Delete'),
+                'url' => Url::fromRoute(
+                  'search_api_typesense.collection.curations.delete', [
+                    'search_api_index' => $index_id,
+                    'id' => $value['id'],
+                  ],
+                ),
+              ],
             ],
           ],
         ],
@@ -310,6 +319,80 @@ final class CurationsForm extends FormBase {
     $table['#rows'] = $rows;
 
     return $table;
+  }
+
+  /**
+   * Deserializes the includes string.
+   *
+   * $includes string is like "entity:node-9:en/1,entity:node-42:en/3".
+   *
+   * @param string $includes
+   *   The includes string.
+   *
+   * @return array|array[]
+   *   The deserialized includes.
+   */
+  private function deserializeIncludes(string $includes): array {
+    $includes = explode(',', $includes);
+    $includes = array_map('trim', $includes);
+    $includes = array_filter($includes);
+
+    return array_map(function ($include) {
+      [$id, $position] = explode('/', $include);
+
+      return ['id' => $id, 'position' => intval($position)];
+    }, $includes, array_keys($includes));
+  }
+
+  /**
+   * Deserializes the excludes string.
+   *
+   * $excludes string is like "entity:node-9:en,entity:node-42:en".
+   *
+   * @param string $excludes
+   *   The excludes string.
+   *
+   * @return array|array[]
+   *   The deserialized excludes.
+   */
+  private function deserializeExcludes(string $excludes): array {
+    $excludes = explode(',', $excludes);
+    $excludes = array_map('trim', $excludes);
+    $excludes = array_filter($excludes);
+
+    return array_map(function ($exclude) {
+      return ['id' => $exclude];
+    }, $excludes, array_keys($excludes));
+  }
+
+  /**
+   * Serializes the includes array.
+   *
+   * @param array $includes
+   *   The includes array.
+   *
+   * @return string
+   *   The serialized includes.
+   */
+  private function serializeIncludes(array $includes): string {
+    return implode(',', array_map(function ($include) {
+      return $include['id'] . '/' . $include['position'];
+    }, $includes));
+  }
+
+  /**
+   * Serializes the excludes array.
+   *
+   * @param array $excludes
+   *   The excludes array.
+   *
+   * @return string
+   *   The serialized excludes.
+   */
+  private function serializeExcludes(array $excludes): string {
+    return implode(',', array_map(function ($exclude) {
+      return $exclude['id'];
+    }, $excludes));
   }
 
 }
