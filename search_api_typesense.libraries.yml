@@ -1,0 +1,5 @@
+search:
+  js:
+    js/search.js: {}
+  dependencies:
+    - core/jquery

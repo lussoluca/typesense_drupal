@@ -1,0 +1,52 @@
+<script
+  src="https://cdn.jsdelivr.net/npm/typesense-instantsearch-adapter@2/dist/typesense-instantsearch-adapter.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/algoliasearch@4.20.0/dist/algoliasearch-lite.umd.js"
+        integrity="sha256-DABVk+hYj0mdUzo+7ViJC6cwLahQIejFvC+my2M/wfM=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/instantsearch.js@4.60.0/dist/instantsearch.production.min.js"
+        integrity="sha256-9242vN47QUX50UG5Gf5XDO1YREWCEJRyXHofh5fsl24=" crossorigin="anonymous"></script>
+
+<style>
+  .ais-Hits-item {
+    list-style: none;
+    margin-bottom: 20px;
+    border-left: 3px solid #ccc;
+    padding-left: 10px;
+  }
+  .hit-title {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+  .hit-body {
+    font-size: 0.9em;
+    margin-bottom: 5px;
+  }
+  .ais-Pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+  }
+  .ais-Pagination-list {
+    display: flex;
+    list-style: none;
+    padding: 0;
+  }
+  .ais-Pagination-item {
+    margin: 0 5px;
+  }
+</style>
+
+<div class="container" style="padding-top: 50px">
+  <div style="display: flex; justify-content: center">
+    <div id="searchbox" style="margin-bottom: 50px"></div>
+  </div>
+  <div id="results">
+    <div id="stats"></div>
+    <div style="display: flex">
+      <div id="category" style="width: 40%; margin-top: 100px"></div>
+      <div id="hits" style="width: 60%"></div>
+    </div>
+    <div id="pagination"></div>
+  </div>
+</div>
