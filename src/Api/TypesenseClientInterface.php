@@ -407,4 +407,48 @@ interface TypesenseClientInterface {
    */
   public function prepareItemValue(string|int|array|null $value, string $type): bool|float|int|string;
 
+  /**
+   * Retrieves the fields for a collection.
+   *
+   * @param string $collection_name
+   *   The name of the collection to retrieve fields for.
+   *
+   * @return string[]
+   *   The fields for the collection.
+   */
+  public function getFields(string $collection_name): array;
+
+  /**
+   * Retrieves the fields for a collection that can be queried by.
+   *
+   * @param string $collection_name
+   *   The name of the collection to retrieve fields for.
+   *
+   * @return string[]
+   *   The fields for the collection that can be queried by.
+   */
+  public function getFieldsForQueryBy(string $collection_name): array;
+
+  /**
+   * Retrieves the fields for a collection that can be used for number facets.
+   *
+   * @param string $collection_name
+   *   The name of the collection to retrieve fields for.
+   *
+   * @return string[]
+   *   The fields for the collection that can be used for number facets.
+   */
+  public function getFieldsForFacetNumber(string $collection_name): array;
+
+  /**
+   * Retrieves the fields for a collection that can be used for string facets.
+   *
+   * @param string $collection_name
+   *   The name of the collection to retrieve fields for.
+   *
+   * @return string[]
+   *   The fields for the collection that can be used for string facets.
+   */
+  public function getFieldsForFacetString(string $collection_name): array;
+
 }

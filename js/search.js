@@ -1,7 +1,7 @@
 (function ($, Drupal, drupalSettings) {
 
   Drupal.behaviors.search = {
-    attach: function (context) {
+    attach: function (context, settings) {
 
       const [x] = once('searchbox', '#searchbox', context);
       if (x !== undefined) {
@@ -10,40 +10,42 @@
 
       const typesenseInstantsearchAdapter = new TypesenseInstantSearchAdapter({
         server: {
-          apiKey: 'ddev',
+          apiKey: settings.search_api_typesense.api_key,
           nodes: [
             {
-              host: 'typesense.ddev.site',
-              port: 8108,
-              protocol: 'https',
+              host: settings.search_api_typesense.host,
+              port: settings.search_api_typesense.port,
+              protocol: settings.search_api_typesense.protocol,
             },
           ],
         },
         additionalSearchParameters: {
-          query_by: 'name',
+          query_by: settings.search_api_typesense.query_by_fields,
         },
       });
       const searchClient = typesenseInstantsearchAdapter.searchClient;
 
       const search = instantsearch({
         searchClient,
-        indexName: 'terms',
+        indexName: settings.search_api_typesense.index,
         routing: true,
-        searchFunction(helper) {
-          const container = document.querySelector('#results');
-          container.style.display = helper.state.query === '' ? 'none' : '';
-
-          helper.search();
-        },
       });
+
+      let template = "<article>";
+      for (const field of settings.search_api_typesense.all_fields) {
+        template += `<p><strong>${field}</strong>: {{#helpers.snippet}}{ "attribute": "${field}" }{{/helpers.snippet}}</p>`;
+      }
+      template += "</article>";
 
       search.addWidgets([
         instantsearch.widgets.searchBox({
           container: '#searchbox',
-          // searchAsYouType: false,
         }),
         instantsearch.widgets.hits({
           container: '#hits',
+          templates: {
+            item: template,
+          },
         }),
         instantsearch.widgets.pagination({
           container: '#pagination',
@@ -52,6 +54,16 @@
           container: '#stats',
         }),
       ]);
+
+      for (const facet of settings.search_api_typesense.facet_string_fields) {
+        search.addWidgets([
+          instantsearch.widgets.refinementList({
+            container: `#${facet}`,
+            attribute: facet,
+            searchable: true,
+          }),
+        ]);
+      }
 
       search.start();
     },

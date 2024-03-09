@@ -25,8 +25,11 @@ function search_api_typesense_help($route_name, RouteMatchInterface $route_match
  */
 function search_api_typesense_theme($existing, $type, $theme, $path): array {
   return [
-    'serp' => [
-      'variables' => [],
+    'search_api_typesense_admin_serp' => [
+      'variables' => [
+        'facet_number_fields' => [],
+        'facet_string_fields' => [],
+      ],
     ],
   ];
 }

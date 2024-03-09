@@ -308,7 +308,7 @@ class TypesenseClient implements TypesenseClientInterface {
   /**
    * {@inheritdoc}
    */
-  public function retrieveCollectionInfo(string $collection_name): array|null {
+  public function retrieveCollectionInfo(string $collection_name,): array | null {
     try {
       $collection = $this->retrieveCollection($collection_name, FALSE);
 
@@ -516,6 +516,106 @@ class TypesenseClient implements TypesenseClientInterface {
   }
 
   /**
+   * {@inheritdoc}
+   */
+  public function getFields(string $collection_name): array {
+    try {
+      $collection = $this->retrieveCollection($collection_name);
+      if ($collection === NULL) {
+        return [];
+      }
+
+      $schema = $collection->retrieve();
+
+      return array_map(function (array $field) {
+        return $field['name'];
+      }, $schema['fields']);
+    }
+    catch (Exception | TypesenseClientError | SearchApiTypesenseException $e) {
+      return [];
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getFieldsForQueryBy(string $collection_name): array {
+    try {
+      $collection = $this->retrieveCollection($collection_name);
+      if ($collection === NULL) {
+        return [];
+      }
+
+      $schema = $collection->retrieve();
+
+      return array_map(function (array $field) {
+        return $field['name'];
+      }, array_filter($schema['fields'], function ($field) {
+        return in_array($field['type'], ['string', 'string[]']);
+      }));
+    }
+    catch (Exception | TypesenseClientError | SearchApiTypesenseException $e) {
+      return [];
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getFieldsForFacetNumber(string $collection_name): array {
+    try {
+      $collection = $this->retrieveCollection($collection_name);
+      if ($collection === NULL) {
+        return [];
+      }
+
+      $schema = $collection->retrieve();
+
+      return array_values(array_map(function (array $field) {
+        return $field['name'];
+      }, array_filter($schema['fields'], function ($field) {
+        return $field['facet'] == TRUE && in_array($field['type'], [
+          'int32',
+          'int64',
+          'float',
+          'int32[]',
+          'int64[]',
+          'float[]',
+        ]);
+      })));
+    }
+    catch (Exception | TypesenseClientError | SearchApiTypesenseException $e) {
+      return [];
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getFieldsForFacetString(string $collection_name): array {
+    try {
+      $collection = $this->retrieveCollection($collection_name);
+      if ($collection === NULL) {
+        return [];
+      }
+
+      $schema = $collection->retrieve();
+
+      return array_values(array_map(function (array $field) {
+        return $field['name'];
+      }, array_filter($schema['fields'], function ($field) {
+        return $field['facet'] == TRUE && in_array($field['type'], [
+          'string',
+          'string[]',
+        ]);
+      })));
+    }
+    catch (Exception | TypesenseClientError | SearchApiTypesenseException $e) {
+      return [];
+    }
+  }
+
+  /**
    * Gets a Typesense collection.
    *
    * @param string|null $collection_name
@@ -530,7 +630,10 @@ class TypesenseClient implements TypesenseClientInterface {
    *
    * @see https://typesense.org/docs/latest/api/collections.html#retrieve-a-collection
    */
-  private function retrieveCollection(?string $collection_name, bool $throw = TRUE): ?Collection {
+  private function retrieveCollection(
+    ?string $collection_name,
+    bool $throw = TRUE,
+  ): ?Collection {
     try {
       $collection = $this->client->collections[$collection_name];
       // Ensure that collection exists on the typesense server by retrieving it.

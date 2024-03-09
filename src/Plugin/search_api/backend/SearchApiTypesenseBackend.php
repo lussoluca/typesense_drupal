@@ -407,6 +407,48 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
       ];
     }
 
+    $form['browser_client'] = [
+      '#type' => 'details',
+      '#open' => FALSE,
+      '#title' => $this->t('Browser client'),
+      '#description' => $this->t('How to connect to Typesense from the browser.'),
+    ];
+
+    $form['browser_client']['host'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Host'),
+      '#maxlength' => 128,
+      '#required' => TRUE,
+      '#description' => $this->t('The hostname for connecting to this node.'),
+      '#default_value' => $this->configuration['browser_client']['host'] ?? NULL,
+      '#attributes' => [
+        'placeholder' => 'typesense.example.com',
+      ],
+    ];
+
+    $form['browser_client']['port'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Port'),
+      '#maxlength' => 5,
+      '#required' => TRUE,
+      '#description' => $this->t('The port for connecting to this node.'),
+      '#default_value' => $this->configuration['browser_client']['port'] ?? NULL,
+      '#attributes' => [
+        'placeholder' => '576',
+      ],
+    ];
+
+    $form['browser_client']['protocol'] = [
+      '#type' => 'select',
+      '#title' => $this->t('Protocol'),
+      '#options' => [
+        'http' => 'http',
+        'https' => 'https',
+      ],
+      '#description' => $this->t('The protocol for connecting to this node.'),
+      '#default_value' => $this->configuration['browser_client']['protocol'] ?? 'https',
+    ];
+
     $form['retry_interval_seconds'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Connection timeout (seconds)'),

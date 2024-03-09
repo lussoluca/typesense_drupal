@@ -30,11 +30,32 @@ class TypesenseIndexController extends ControllerBase {
       throw new \InvalidArgumentException('The server must use the Typesense backend.');
     }
 
+    $configuration = $backend->getConfiguration();
+    $all_fields = $backend->getTypesense()->getFields($search_api_index->id());
+    $query_by_fields = $backend->getTypesense()->getFieldsForQueryBy($search_api_index->id());
+    $facet_number_fields = $backend->getTypesense()->getFieldsForFacetNumber($search_api_index->id());
+    $facet_string_fields = $backend->getTypesense()->getFieldsForFacetString($search_api_index->id());
+
     $build['content'] = [
-      '#theme' => 'serp',
+      '#theme' => 'search_api_typesense_admin_serp',
+      '#facet_number_fields' => $facet_number_fields,
+      '#facet_string_fields' => $facet_string_fields,
       '#attached' => [
         'library' => [
           'search_api_typesense/search',
+        ],
+        'drupalSettings' => [
+          'search_api_typesense' => [
+            'api_key' => $configuration['admin_api_key'],
+            'host' => $configuration['browser_client']['host'],
+            'port' => $configuration['browser_client']['port'],
+            'protocol' => $configuration['browser_client']['protocol'],
+            'index' => $search_api_index->id(),
+            'all_fields' => $all_fields,
+            'query_by_fields' => implode(',', $query_by_fields),
+            'facet_number_fields' => $facet_number_fields,
+            'facet_string_fields' => $facet_string_fields,
+          ],
         ],
       ],
     ];

@@ -21,3 +21,16 @@ search_api_typesense.settings:
         protocol:
           type: text
           label: 'Protocol'
+    browser_client:
+      type: mapping
+      label: 'Browser client'
+      mapping:
+        host:
+          type: text
+          label: 'Host'
+        port:
+          type: text
+          label: 'Port'
+        protocol:
+          type: text
+          label: 'Protocol'

@@ -37,16 +37,16 @@
   }
 </style>
 
-<div class="container" style="padding-top: 50px">
-  <div style="display: flex; justify-content: center">
-    <div id="searchbox" style="margin-bottom: 50px"></div>
+<div style="display: flex; justify-content: center">
+  <div id="searchbox" style="margin-bottom: 50px"></div>
+</div>
+<div id="results">
+  <div id="stats"></div>
+  <div style="display: flex">
+    {% for facet_string_field in facet_string_fields %}
+      <div id="{{ facet_string_field }}" style="width: 20%"></div>
+    {% endfor %}
+    <div id="hits" style="width: 80%"></div>
   </div>
-  <div id="results">
-    <div id="stats"></div>
-    <div style="display: flex">
-      <div id="category" style="width: 40%; margin-top: 100px"></div>
-      <div id="hits" style="width: 60%"></div>
-    </div>
-    <div id="pagination"></div>
-  </div>
+  <div id="pagination"></div>
 </div>
