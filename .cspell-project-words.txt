@@ -1,0 +1,20 @@
+# Typesense terminology
+~typesense
+~curations
+
+# Search API terminology
+datasource
+
+# Strings in configuration files
+rulesets
+cleancode
+codesize
+unusedcode
+
+# Names
+ddev
+~instantsearch
+previousnext
+Torgalson
+Lusso
+Luca

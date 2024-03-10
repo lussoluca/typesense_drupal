@@ -36,8 +36,9 @@ class TypesenseIndexController extends ControllerBase {
     $facet_number_fields = $backend->getTypesense()->getFieldsForFacetNumber($search_api_index->id());
     $facet_string_fields = $backend->getTypesense()->getFieldsForFacetString($search_api_index->id());
 
+    $build = [];
     $build['content'] = [
-      '#theme' => 'search_api_typesense_admin_serp',
+      '#theme' => 'search_api_typesense_admin_search',
       '#facet_number_fields' => $facet_number_fields,
       '#facet_string_fields' => $facet_string_fields,
       '#attached' => [

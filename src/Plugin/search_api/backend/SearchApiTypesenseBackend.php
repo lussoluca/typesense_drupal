@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Drupal\search_api_typesense\Plugin\search_api\backend;
 
-use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\PluginFormInterface;
 use Drupal\search_api\Backend\BackendPluginBase;
@@ -52,8 +51,6 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
    *   The logger interface.
    * @param \Drupal\search_api\Utility\FieldsHelper|null $fieldsHelper
    *   The fields' helper.
-   * @param \Drupal\Core\Config\ConfigFactoryInterface $configFactory
-   *   The config factory.
    * @param \Drupal\Core\Messenger\MessengerInterface|null $messenger
    *   The messenger.
    * @param \Psr\Http\Client\ClientInterface $httpClient
@@ -65,7 +62,6 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
     $plugin_definition,
     protected $logger,
     protected $fieldsHelper,
-    private readonly ConfigFactoryInterface $configFactory,
     protected $messenger,
     private readonly ClientInterface $httpClient,
   ) {
@@ -87,7 +83,6 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
       $plugin_definition,
       $container->get('logger.channel.search_api_typesense'),
       $container->get('search_api.fields_helper'),
-      $container->get('config.factory'),
       $container->get('messenger'),
       $container->get('http_client'),
     );
@@ -277,7 +272,7 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
    * Provides Typesense Server settings.
    *
    * @todo: Adding new nodes by AJAX is broken, so:
-   *   - unbreak it,
+   *   - fix it
    */
   public function buildConfigurationForm(
     array $form,
@@ -298,7 +293,7 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
       '#maxlength' => 128,
       '#size' => 30,
       '#required' => TRUE,
-      '#description' => $this->t('A read-write API key for this Typesense instance. Required for indexing content. <strong>This key must be kept secret and never trasmitted to the client. Ideally, it will be provided by an environment variable and never stored in version control systems</strong>.'),
+      '#description' => $this->t('A read-write API key for this Typesense instance. Required for indexing content. <strong>This key must be kept secret and never transmitted to the client. Ideally, it will be provided by an environment variable and never stored in version control systems</strong>.'),
       '#default_value' => $this->configuration['admin_api_key'] ?? NULL,
       '#attributes' => [
         'placeholder' => '1234567890',

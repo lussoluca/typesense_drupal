@@ -9,6 +9,10 @@
         {
             "name": "Christopher Torgalson",
             "email": "manager@bedlamhotel.com"
+        },
+        {
+            "name": "Luca Lusso",
+            "email": "lussoluca@gmail.com"
         }
     ],
     "support": {
@@ -17,7 +21,6 @@
     },
     "require": {
         "drupal/core": "^9 || ^10",
-        "php-http/curl-client": "^2.3",
         "typesense/typesense-php": "^4.9",
         "drupal/search_api": "^1.0"
     },

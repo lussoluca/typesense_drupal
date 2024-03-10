@@ -18,7 +18,7 @@ as per the [Search API documentation](https://www.drupal.org/docs/8/modules/sear
 
 `/admin/config/search/search-api/add-index`
 
-and replace Search API datatypes with Typesense datatypes (for example `string` becomes `Typesense: string`).
+and replace Search API datatype with Typesense datatype (for example `string` becomes `Typesense: string`).
 
 6. Configure the Typesense Schema processor at
 

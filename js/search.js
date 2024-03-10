@@ -1,8 +1,6 @@
-(function ($, Drupal, drupalSettings) {
-
+(function ($, Drupal, TypesenseInstantSearchAdapter, instantsearch) {
   Drupal.behaviors.search = {
     attach: function (context, settings) {
-
       const [x] = once('searchbox', '#searchbox', context);
       if (x !== undefined) {
         return;
@@ -32,9 +30,9 @@
       });
 
       let template = "<article>";
-      for (const field of settings.search_api_typesense.all_fields) {
+      settings.search_api_typesense.all_fields.forEach((field) => {
         template += `<p><strong>${field}</strong>: {{#helpers.snippet}}{ "attribute": "${field}" }{{/helpers.snippet}}</p>`;
-      }
+      });
       template += "</article>";
 
       search.addWidgets([
@@ -55,7 +53,7 @@
         }),
       ]);
 
-      for (const facet of settings.search_api_typesense.facet_string_fields) {
+      settings.search_api_typesense.facet_string_fields.forEach((facet) => {
         search.addWidgets([
           instantsearch.widgets.refinementList({
             container: `#${facet}`,
@@ -63,10 +61,9 @@
             searchable: true,
           }),
         ]);
-      }
+      });
 
       search.start();
     },
   };
-
-}(jQuery, Drupal, drupalSettings));
+}(jQuery, Drupal, TypesenseInstantSearchAdapter, instantsearch));

@@ -552,7 +552,7 @@ class TypesenseClient implements TypesenseClientInterface {
       return array_map(function (array $field) {
         return $field['name'];
       }, array_filter($schema['fields'], function ($field) {
-        return in_array($field['type'], ['string', 'string[]']);
+        return in_array($field['type'], ['string', 'string[]'], FALSE);
       }));
     }
     catch (Exception | TypesenseClientError | SearchApiTypesenseException $e) {
@@ -582,7 +582,7 @@ class TypesenseClient implements TypesenseClientInterface {
           'int32[]',
           'int64[]',
           'float[]',
-        ]);
+        ], FALSE);
       })));
     }
     catch (Exception | TypesenseClientError | SearchApiTypesenseException $e) {
@@ -608,7 +608,7 @@ class TypesenseClient implements TypesenseClientInterface {
         return $field['facet'] == TRUE && in_array($field['type'], [
           'string',
           'string[]',
-        ]);
+        ], FALSE);
       })));
     }
     catch (Exception | TypesenseClientError | SearchApiTypesenseException $e) {
