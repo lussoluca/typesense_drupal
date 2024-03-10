@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Drupal\search_api_typesense\Api;
 
 use Drupal\Core\StringTranslation\StringTranslationTrait;
+use GuzzleHttp\Exception\ConnectException;
 use Http\Client\Exception;
 use Typesense\Client;
 use Typesense\Collection;
@@ -32,7 +33,7 @@ class TypesenseClient implements TypesenseClientInterface {
       $this->client = new Client($config->toArray());
       $this->client->health->retrieve();
     }
-    catch (Exception | TypesenseClientError $e) {
+    catch (ConnectException | Exception | TypesenseClientError $e) {
       throw new SearchApiTypesenseException($e->getMessage(), $e->getCode(),
         $e);
     }
