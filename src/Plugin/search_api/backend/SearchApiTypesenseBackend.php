@@ -750,7 +750,7 @@ class SearchApiTypesenseBackend extends BackendPluginBase implements PluginFormI
       return $this->typesense;
     }
 
-    $config = $this->getClientConfiguration($this->configuration, FALSE);
+    $config = $this->getClientConfiguration($this->configuration);
     if ($config == NULL || !$config->valid()) {
       return NULL;
     }

@@ -1,8 +1,8 @@
-(function ($, Drupal, TypesenseInstantSearchAdapter, instantsearch) {
+((Drupal, TypesenseInstantSearchAdapter, instantsearch) => {
   Drupal.behaviors.search = {
-    attach: function (context, settings) {
-      const [x] = once('searchbox', '#searchbox', context);
-      if (x !== undefined) {
+    attach(context, settings) {
+      const [searchbox] = once('searchbox', '#searchbox', context);
+      if (searchbox !== undefined) {
         return;
       }
 
@@ -21,7 +21,7 @@
           query_by: settings.search_api_typesense.query_by_fields,
         },
       });
-      const searchClient = typesenseInstantsearchAdapter.searchClient;
+      const { searchClient } = typesenseInstantsearchAdapter;
 
       const search = instantsearch({
         searchClient,
@@ -29,11 +29,11 @@
         routing: true,
       });
 
-      let template = "<article>";
+      let template = '<article>';
       settings.search_api_typesense.all_fields.forEach((field) => {
         template += `<p><strong>${field}</strong>: {{#helpers.snippet}}{ "attribute": "${field}" }{{/helpers.snippet}}</p>`;
       });
-      template += "</article>";
+      template += '</article>';
 
       search.addWidgets([
         instantsearch.widgets.searchBox({
@@ -66,4 +66,4 @@
       search.start();
     },
   };
-}(jQuery, Drupal, TypesenseInstantSearchAdapter, instantsearch));
+})(Drupal, TypesenseInstantSearchAdapter, instantsearch); // eslint-disable-line
